@@ -43,11 +43,16 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
 
                         if (resource != null) {
                             // Load a prefab that contains this singleton.
-                            GameObject singleton = GameObject.Instantiate<GameObject>(Resources.Load<GameObject>(resource.resourceFilePath));
+                            GameObject prefab = Resources.Load<GameObject>(resource.resourceFilePath);
+                            if (prefab == null) {
+                                Debug.LogError("The Resource Singleton " + typeof(T) + " was not found in any resources folder!");
+                                return null;
+                            }
+                            GameObject singleton = GameObject.Instantiate<GameObject>(prefab);
                             singleton.name = "(resource global singleton)" + singleton.name;
                             _instance = singleton.GetComponent<T>();
                             if (_instance == null) {
-                                Debug.LogWarning("A prefab was loaded for the singleton, but the component was not on it!");
+                                Debug.LogError("A prefab was loaded for the singleton, but the component was not on it!");
                             } else {
                                 DontDestroyOnLoad(singleton);
                                 Debug.Log("[Singleton] An instance of " + typeof(T) +
