@@ -87,7 +87,7 @@ public class Timer {
     }
 
     public static Timer Register(float duration, Action onComplete, bool isLooped, bool useRealTime, MonoBehaviour autoCancelObj = null) {
-        if (sceneTimerController == null) {
+        if (sceneTimerController == null && !TimerController.applicationIsQuitting) {
             GameObject obj = new GameObject("TimerController");
             sceneTimerController = obj.AddComponent<TimerController>();
         }

@@ -3,6 +3,8 @@ using System.Collections;
 
 public class TimerController : MonoBehaviour {
 
+    public static bool applicationIsQuitting { get; private set; }
+
 	void Awake() {
 		if (GameObject.FindObjectsOfType<TimerController>().Length > 1) {
 			Debug.LogError("There are multiple TimerControllers in this scene!");
@@ -17,4 +19,8 @@ public class TimerController : MonoBehaviour {
 	void OnDestroy() {
 		Timer.CancelAllRegisteredTimers();
 	}
+
+    void OnApplicationQuit() {
+        applicationIsQuitting = true;
+    }
 }
