@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Audio;
 
-namespace QuickUnityTools.Sound {
+namespace QuickUnityTools.Audio {
 
     /// <summary>
     /// A class for quickly importing and playing one-off sounds.
