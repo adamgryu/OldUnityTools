@@ -7,18 +7,16 @@ using System.Collections;
 /// NOTE: This will override Emission settings on the system.
 /// </summary>
 [RequireComponent(typeof(ParticleSystem))]
-public class ParticleBurst : MonoBehaviour {
+public class CleanUpParticles : MonoBehaviour {
 
-	public int burstSize = 50;
     private ParticleSystem system;
 
 	void Start () {
         this.system = this.GetComponent<ParticleSystem>();
-        this.system.Emit(burstSize);
     }
 	
 	void Update () {
-		if (this.system.particleCount <= 0) {
+		if (!this.system.IsAlive()) {
 			GameObject.Destroy(this.gameObject);
 		}
 	}
