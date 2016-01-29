@@ -18,19 +18,12 @@ public class InControlPlayerInput : PlayerInput {
     public override float GetVerticalAxis() {
         return this.device.LeftStick.Y;
     }
-    public override bool IsJumpHeld() {
+
+    public override bool IsAction1Held() {
         return this.device.Action1;
     }
 
-    public override bool IsUseHeld() {
+    public override bool IsAction2Held() {
         return this.device.Action2;
-    }
-
-    public override bool IsRunHeld() {
-        return this.device.Action3;
-    }
-
-    public override bool IsSwapHeld() {
-        return this.device.Action4;
     }
 }

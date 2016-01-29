@@ -1,15 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerInputManager<T> where T : PlayerInput {
+[ResourceSingleton("PlayerInputManager")]
+public class PlayerInputManager<T> : Singleton<PlayerInputManager<T>> where T : PlayerInput {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    void Start() {
+
+    }
+
+    void Update() {
+
+    }
 }
