@@ -22,6 +22,17 @@ public static class QuickUnityExtensions {
         return hex;
     }
 
+    public static Color HexStringToColor(string hex) {
+        try {
+            byte r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+            byte g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+            byte b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+            return new Color32(r, g, b, 255);
+        } catch (FormatException) {
+            return Color.black;
+        }
+    }
+
     public static Color SetA(this Color color, float a) {
         return new Color(color.r, color.g, color.b, a);
     }

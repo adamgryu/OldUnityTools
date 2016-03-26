@@ -3,9 +3,6 @@ using System.Collections;
 using UnityEngine;
 using InControl;
 
-
-namespace CustomProfileExample
-{
 	// This custom profile is enabled by adding it to the Custom Profiles list
 	// on the InControlManager component, or you can attach it yourself like so:
 	// InputManager.AttachDevice( new UnityInputDevice( "KeyboardAndMouseProfile" ) );
@@ -42,7 +39,7 @@ namespace CustomProfileExample
 					Handle = "Fire - Keyboard",
 					Target = InputControlType.Action1,
 					// KeyCodeButton fires when any of the provided KeyCode params are down.
-					Source = KeyCodeButton( KeyCode.F, KeyCode.Return )
+					Source = KeyCodeButton( KeyCode.Return, KeyCode.Z )
 				},
 				new InputControlMapping
 				{
@@ -124,5 +121,4 @@ namespace CustomProfileExample
 			};
 		}
 	}
-}
 

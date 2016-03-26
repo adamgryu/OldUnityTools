@@ -17,6 +17,7 @@ public class KeyboardPlayerInput : PlayerInput {
 
 	public KeyboardPlayerInput(KeyboardMapping mapping) {
         this.mapping = mapping;
+        this.mapping.ToString(); // Suppress warning...
 	}
 
     public override float GetVerticalAxis() {

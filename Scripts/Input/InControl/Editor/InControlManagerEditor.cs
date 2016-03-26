@@ -29,14 +29,10 @@ namespace InControl
 			customProfiles = serializedObject.FindProperty( "customProfiles" );
 
 			var path = AssetDatabase.GetAssetPath( MonoScript.FromScriptableObject( this ) );
-#if UNITY_5_2
-			headerTexture = AssetDatabase.LoadAssetAtPath<Texture>( Path.GetDirectoryName( path ) + "/Images/InControlHeader.png" );
-#endif
-#if UNITY_5_1
-			headerTexture = AssetDatabase.LoadAssetAtPath<Texture>( Path.GetDirectoryName( path ) + "/Images/InControlHeader.png" );
-#endif
 #if UNITY_5_0
 			headerTexture = AssetDatabase.LoadAssetAtPath( Path.GetDirectoryName( path ) + "/Images/InControlHeader.png" , typeof(Texture)) as Texture;
+#else
+            headerTexture = AssetDatabase.LoadAssetAtPath<Texture>(Path.GetDirectoryName(path) + "/Images/InControlHeader.png");
 #endif
         }
 
