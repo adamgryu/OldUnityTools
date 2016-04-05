@@ -4,19 +4,18 @@ using System.Collections;
 public class NavigatorMovement : PhysicsMovement {
 
 	public float successDistance = 0.7f;
+    public bool enableMovement = true;
 
-	private Vector3? goal = null;
-	protected NavMeshPath currentPath { get; private set; }
+    public bool hasGoal { get { return this.goal.HasValue; } }
+    public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != NavMeshPathStatus.PathInvalid; } }
+    public Vector3 destinationNode { get { return this.currentPath.corners[pathNode]; } }
+
+    protected NavMeshPath currentPath { get; private set; }
 	protected int pathNode { get; private set; }
-	private float recalculateTimer = 0.1f;
 
-	// Use this to temporarily turn on and chasing. If false, the guy should just 
-	// sit around like a lazy bum.
-	public bool enableMovement = true;
+    private Vector3? goal = null;
+    private float recalculateTimer = 0.1f;
 
-	public bool hasGoal { get { return this.goal.HasValue; } }
-	public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != NavMeshPathStatus.PathInvalid; } }
-	public Vector3 destinationNode { get { return this.currentPath.corners[pathNode]; } }
 
 	protected override void Update() {
 		base.Update();

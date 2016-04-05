@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public static class QuickUnityExtensions {
 
@@ -42,6 +43,36 @@ public static class QuickUnityExtensions {
             distanceFromCamera = 0;
         }
         return camera.ScreenToWorldPoint(Input.mousePosition.SetZ(distanceFromCamera.Value));
+    }
+
+    public static Vector3 RandomWithin(this Bounds bounds) {
+        Vector3 randomWithin = new Vector3(
+            bounds.size.x * UnityEngine.Random.value,
+            bounds.size.y * UnityEngine.Random.value,
+            bounds.size.z * UnityEngine.Random.value);
+        return bounds.min + randomWithin;
+    }
+
+    public static Rect SplitHorizontal(this Rect rect, int number, int index, float spacing = 5) {
+        float width = (rect.width - (spacing * Math.Max(0, number - 1))) / number;
+        return new Rect(rect.x + (width + spacing) * index, rect.y, width, rect.height);
+    }
+
+    public static Rect SplitHorizontal(this Rect rect, float splitPercent, bool first, float spacing = 5) {
+        return new Rect(
+            rect.x + (first ? 0 : (rect.width - spacing) * splitPercent + spacing),
+            rect.y,
+            (rect.width - spacing) * (first ? splitPercent : 1 - splitPercent),
+            rect.height);
+    }
+
+    public static Rect SplitVertical(this Rect rect, int number, int index, float spacing = 5) {
+        float height = (rect.height - (spacing * Math.Max(0, number - 1))) / number;
+        return new Rect(rect.x, rect.y + (height + spacing) * index, rect.width, height);
+    }
+
+    public static string CamelCaseToSpaces(this string text) {
+        return Regex.Replace(text, "(\\B[A-Z])", " $1");
     }
 
     #region Collections

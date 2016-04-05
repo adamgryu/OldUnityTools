@@ -116,10 +116,10 @@ public abstract class PhysicsMovement : MonoBehaviour {
 		Vector3 direction = this.GetDesiredMovementDirection();
 
 		if (this.ResolveCanMove()) {
-			Vector3 desiredVelocity = direction * this.CheckMaximumVelocity();
+			Vector3 desiredVelocity = direction * this.ResolveMaximumVelocity();
 			Vector3 currentVelocity = this.GetComponent<Rigidbody>().velocity.SetY(0); // TOOD: Generalize to allow movement along different planes.
 			Vector3 diff = desiredVelocity - currentVelocity;
-			float force = this.CheckMovementForce();
+			float force = this.ResolveMovementForce();
 			this.body.AddForceAtPosition(diff * force * Time.fixedDeltaTime, this.forceApplyPosition.transform.position);
 		}
 
@@ -159,12 +159,12 @@ public abstract class PhysicsMovement : MonoBehaviour {
         return true;
     }
 
-	public virtual float CheckMovementForce() {
+	public virtual float ResolveMovementForce() {
 		float force = this.isGrounded ? this.movementForce : this.midairForce;
 		return force;
 	}
 
-    public virtual float CheckMaximumVelocity() {
+    public virtual float ResolveMaximumVelocity() {
         return this.maxVelocity;
     }
 
