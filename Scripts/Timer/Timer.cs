@@ -41,7 +41,7 @@ public class Timer {
     private float GetDeltaTime() {
         if (this.usesRealTime) {
             Debug.LogWarning("Delta time is NOT supported for realtime timers!");
-            return Time.deltaTime;   
+            return Time.deltaTime;
         } else {
             return Time.deltaTime;
         }
@@ -86,7 +86,7 @@ public class Timer {
         return (this.GetTime() - this.startTime) / this.duration;
     }
 
-    public static Timer Register(float duration, Action onComplete, bool isLooped, bool useRealTime, MonoBehaviour autoCancelObj = null) {
+    public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useRealTime = false, MonoBehaviour autoCancelObj = null) {
         if (sceneTimerController == null && !TimerController.applicationIsQuitting) {
             GameObject obj = new GameObject("TimerController");
             sceneTimerController = obj.AddComponent<TimerController>();
