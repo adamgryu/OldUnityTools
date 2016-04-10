@@ -22,6 +22,7 @@ public class TrackerCameraMovement : MonoBehaviour {
     public Vector3 cameraOffset;
 
 	public List<GameObject> additionalCameraTargets;
+    public Func<Vector3, Vector3> limitCameraMovement;
 
 
     public virtual IEnumerable<GameObject> GetGameObjectsToTrack() {
@@ -32,6 +33,9 @@ public class TrackerCameraMovement : MonoBehaviour {
 		if (this.GetGameObjectsToTrack().Count() > 0 || this.additionalCameraTargets.Count > 0) {
 			float desiredSize;
 			Vector3 desired = this.CalculatePlayerFocusCameraSettings(out desiredSize);
+            if (this.limitCameraMovement != null) {
+                desired = this.limitCameraMovement(desired);
+            }
 			this.transform.position += (desired - this.transform.position) * cameraDriftLerp * Time.fixedDeltaTime;
 			Camera.main.orthographicSize += (desiredSize - Camera.main.orthographicSize) * cameraDriftLerp * Time.fixedDeltaTime;
 		}
