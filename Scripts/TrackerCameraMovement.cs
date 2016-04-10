@@ -24,6 +24,9 @@ public class TrackerCameraMovement : MonoBehaviour {
 	public List<GameObject> additionalCameraTargets;
     public Func<Vector3, Vector3> limitCameraMovement;
 
+    public float acceleration = 2;
+    private float speed;
+
 
     public virtual IEnumerable<GameObject> GetGameObjectsToTrack() {
         return EMPTY_LIST;
@@ -36,7 +39,18 @@ public class TrackerCameraMovement : MonoBehaviour {
             if (this.limitCameraMovement != null) {
                 desired = this.limitCameraMovement(desired);
             }
-			this.transform.position += (desired - this.transform.position) * cameraDriftLerp * Time.fixedDeltaTime;
+            Vector3 desiredMovement = (desired - this.transform.position) * cameraDriftLerp;
+
+            // Clamp the desired movement by the speed and handle acceleration.
+            if (desiredMovement.sqrMagnitude > this.speed.Sqr()) {
+                float length = desiredMovement.magnitude;
+                speed = Mathf.MoveTowards(this.speed, length, this.acceleration * Time.fixedDeltaTime);
+                desiredMovement = desiredMovement * speed / length;
+            } else {
+                speed = desiredMovement.magnitude;
+            }
+
+            this.transform.position += desiredMovement * Time.fixedDeltaTime;
 			Camera.main.orthographicSize += (desiredSize - Camera.main.orthographicSize) * cameraDriftLerp * Time.fixedDeltaTime;
 		}
 	}
