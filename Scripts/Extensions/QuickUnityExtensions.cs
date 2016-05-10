@@ -74,6 +74,12 @@ public static class QuickUnityExtensions {
     public static string CamelCaseToSpaces(this string text) {
         return Regex.Replace(text, "(\\B[A-Z])", " $1");
     }
+    
+    public static IEnumerable<Transform> GetChildren(this Transform transform) {
+        foreach(Transform child in transform) {
+            yield return child;
+        }
+    }
 
     #region Collections
 
