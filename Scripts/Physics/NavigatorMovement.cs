@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 public class NavigatorMovement : PhysicsMovement {
 
@@ -7,10 +8,10 @@ public class NavigatorMovement : PhysicsMovement {
     public bool enableMovement = true;
 
     public bool hasGoal { get { return this.goal.HasValue; } }
-    public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != NavMeshPathStatus.PathInvalid; } }
+    public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid; } }
     public Vector3 destinationNode { get { return this.currentPath.corners[pathNode]; } }
 
-    protected NavMeshPath currentPath { get; private set; }
+    protected UnityEngine.AI.NavMeshPath currentPath { get; private set; }
 	protected int pathNode { get; private set; }
 
     private Vector3? goal = null;
@@ -80,7 +81,7 @@ public class NavigatorMovement : PhysicsMovement {
 
 
 	protected void RecalculatePath() {
-		NavMeshPath path = new NavMeshPath();
+		NavMeshPath path = new UnityEngine.AI.NavMeshPath();
 		NavMesh.CalculatePath(this.transform.position, goal.Value, int.MaxValue, path);
 		this.currentPath = path;
 		this.pathNode = Mathf.Min(1, path.corners.Length - 1);
