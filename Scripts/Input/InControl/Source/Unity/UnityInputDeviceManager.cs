@@ -121,8 +121,7 @@ namespace InControl
 			if (InputManager.UnityVersion <= new VersionInfo( 4, 5 ))
 			{
 				if (Application.platform == RuntimePlatform.OSXEditor ||
-				    Application.platform == RuntimePlatform.OSXPlayer ||
-				    Application.platform == RuntimePlatform.OSXWebPlayer)
+				    Application.platform == RuntimePlatform.OSXPlayer)
 				{
 					if (unityJoystickName == "Unknown Wireless Controller")
 					{
@@ -136,8 +135,7 @@ namespace InControl
 			if (InputManager.UnityVersion >= new VersionInfo( 4, 6, 3 ))
 			{
 				if (Application.platform == RuntimePlatform.WindowsEditor ||
-				    Application.platform == RuntimePlatform.WindowsPlayer ||
-				    Application.platform == RuntimePlatform.WindowsWebPlayer)
+				    Application.platform == RuntimePlatform.WindowsPlayer)
 				{
 					if (String.IsNullOrEmpty( unityJoystickName ))
 					{
