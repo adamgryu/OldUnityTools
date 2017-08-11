@@ -26,13 +26,12 @@ public class TrackerCameraMovement : MonoBehaviour {
 
     // Public Properties
     public Func<Vector3, Vector3> limitCameraMovement;
+    public float speed { get; set; }
 
     // Private / Protected Properties
     protected Camera myCamera;
     protected Transform lockedTransform;
     protected bool isLocked;
-
-    private float speed;
 
 
     protected virtual void Awake() {
