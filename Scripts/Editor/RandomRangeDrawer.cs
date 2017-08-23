@@ -22,7 +22,7 @@ public class RandomRangeDrawer : PropertyDrawer {
         var amountRect = new Rect(position.x, position.y, position.width / 2, position.height);
         var unitRect = new Rect(position.x + position.width / 2, position.y, position.width / 2, position.height);
 
-        // Draw fields - passs GUIContent.none to each so they are drawn without labels
+        // Draw fields - pass GUIContent.none to each so they are drawn without labels
         EditorGUI.PropertyField(amountRect, property.FindPropertyRelative("min"), GUIContent.none);
         EditorGUI.PropertyField(unitRect, property.FindPropertyRelative("max"), GUIContent.none);
 

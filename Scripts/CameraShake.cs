@@ -5,6 +5,7 @@ using System.Collections;
 /// Adds a shaking effect to the camera which can be triggered through code. A random vector is
 /// added to the camera position on OnPreRender() if a shake is occuring.
 /// </summary>
+[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 public class CameraShake : MonoBehaviour {
 
@@ -25,14 +26,16 @@ public class CameraShake : MonoBehaviour {
     private float shakeStrength;
     private Vector3 lastShakeVector;
 
+    private float adjustedCooldownTime { get { return this.shakeCooldownTime * this.shakeStrength; } }
+
     /// <summary>
     /// Shakes the camera.
     /// </summary>
-    /// <param name="shakeStrength">A multiplier applied to the default shake distance.</param>
+    /// <param name="shakeStrength">A multiplier applied to the default shake distance and shake cooldown time.</param>
     /// <param name="overrideShakeStrength">If true, the new shake strength will be applied even if it is smaller than the current shake.</param>
     public void Shake(float shakeStrength = 1, bool overrideShakeStrength = false) {
         this.shakeStrength = (overrideShakeStrength || !this.isShaking) ? shakeStrength : Mathf.Max(shakeStrength, this.shakeStrength);
-        this.shakeCooldown = this.shakeCooldownTime;
+        this.shakeCooldown = this.adjustedCooldownTime;
     }
 
     /// <summary>
@@ -55,8 +58,8 @@ public class CameraShake : MonoBehaviour {
 
     private void OnPreRender() {
         if (this.shakeCooldown > SHAKE_DELTA) {
-            float shakePercent = this.shakeCooldown / this.shakeCooldownTime;
-            this.lastShakeVector = Random.insideUnitSphere * this.shakeCooldownCurve.Evaluate(shakePercent) * this.shakeDistance;
+            float shakePercent = this.shakeCooldown / this.adjustedCooldownTime;
+            this.lastShakeVector = Random.insideUnitSphere * this.shakeCooldownCurve.Evaluate(shakePercent) * this.shakeStrength * this.shakeDistance;
             this.transform.position += this.lastShakeVector;
         }
     }
