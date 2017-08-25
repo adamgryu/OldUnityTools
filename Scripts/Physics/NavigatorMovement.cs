@@ -1,3 +1,4 @@
+using Paper.Characters;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
@@ -78,7 +79,6 @@ public class NavigatorMovement : PhysicsMovement {
 		this.goal = null;
 		this.currentPath = null;
 	}
-
 
 	protected void RecalculatePath() {
 		NavMeshPath path = new UnityEngine.AI.NavMeshPath();
