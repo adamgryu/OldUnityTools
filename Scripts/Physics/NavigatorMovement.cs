@@ -1,4 +1,3 @@
-using Paper.Characters;
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
