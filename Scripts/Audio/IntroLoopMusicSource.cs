@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace QuickUnityTools.Audio {
     public class IntroLoopMusicSource : MonoBehaviour {
@@ -8,6 +9,7 @@ namespace QuickUnityTools.Audio {
         private const int SECONDS_IN_MINUTE = 60;
 
         public MusicData music;
+        public AudioMixerGroup mixerGroup;
 
         private AudioSource[] audioSources;
         private float introTime { get { return ((music.beatsPerMeasure * music.introMeasures) / music.beatsPerMinute) * SECONDS_IN_MINUTE; } }
@@ -23,6 +25,7 @@ namespace QuickUnityTools.Audio {
             for (int i = 0; i < audioSources.Length; i++) {
                 audioSources[i] = gameObject.AddComponent<AudioSource>();
                 audioSources[i].clip = music.clip;
+                audioSources[i].outputAudioMixerGroup = mixerGroup;
             }
             Play();
         }
