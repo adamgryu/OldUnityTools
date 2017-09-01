@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using QuickUnityTools.Input;
+using UnityEngine;
 using System.Collections;
 
 [ResourceSingleton("PlayerInputManager")]

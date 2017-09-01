@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using InControl;
+using QuickUnityTools.Input;
 
 public class InControlPlayerInput : PlayerInput {
 

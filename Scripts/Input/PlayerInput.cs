@@ -2,33 +2,35 @@
 using System.Collections;
 using System;
 
-public class PlayerInput {
+namespace QuickUnityTools.Input {
+    public class PlayerInput {
 
-    public PlayerInput() {
+        public PlayerInput() {
 
-    }
-    
-    public virtual void Update() {
-        
-    }
+        }
 
-    public Vector2 GetMovement() {
-        return new Vector2(this.GetHorizontalAxis(), this.GetVerticalAxis());
-    }
+        public virtual void Update() {
 
-    public virtual float GetHorizontalAxis() {
-        return Input.GetAxis("Horizontal");
-    }
+        }
 
-    public virtual float GetVerticalAxis() {
-        return Input.GetAxis("Vertical");
-    }
+        public Vector2 GetMovement() {
+            return new Vector2(this.GetHorizontalAxis(), this.GetVerticalAxis());
+        }
 
-    public virtual bool IsAction1Held() {
-        return Input.GetButton("Fire1");
-    }
+        public virtual float GetHorizontalAxis() {
+            return UnityEngine.Input.GetAxis("Horizontal");
+        }
 
-    public virtual bool IsAction2Held() {
-        return Input.GetButton("Fire2");
+        public virtual float GetVerticalAxis() {
+            return UnityEngine.Input.GetAxis("Vertical");
+        }
+
+        public virtual bool IsAction1Held() {
+            return UnityEngine.Input.GetButton("Fire1");
+        }
+
+        public virtual bool IsAction2Held() {
+            return UnityEngine.Input.GetButton("Fire2");
+        }
     }
 }
