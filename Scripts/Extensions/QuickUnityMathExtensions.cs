@@ -40,6 +40,10 @@ public static class QuickUnityMathExtensions {
         return new Vector2(vector.x, y);
     }
 
+    public static int Mod(this int x, int m) {
+        return (x % m + m) % m;
+    }
+
     public static float Sqr(this float v) {
         return v * v;
     }
