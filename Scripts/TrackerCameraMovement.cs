@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
+/// <summary>
+/// Moves the camera to track multiple targets.
+/// </summary>
 public class TrackerCameraMovement : MonoBehaviour {
 
     protected static List<GameObject> EMPTY_LIST = new List<GameObject>();
@@ -72,7 +75,25 @@ public class TrackerCameraMovement : MonoBehaviour {
         return EMPTY_LIST;
     }
 
-    public Vector3 CalculatePlayerFocusCameraSettings(out float orthoSize) {
+    public Vector3 CalculateDesiredPosition() {
+        float _orthoSize;
+        return CalculatePlayerFocusCameraSettings(out _orthoSize);
+    }
+
+    public virtual void LockTransform(Transform lockedTransform, bool snap = false) {
+        this.isLocked = true;
+        this.lockedTransform = lockedTransform;
+        if (snap) {
+            this.transform.position = lockedTransform.transform.position;
+            this.transform.rotation = lockedTransform.transform.rotation;
+        }
+    }
+
+    public virtual void UnlockTransform() {
+        this.isLocked = false;
+    }
+
+    private Vector3 CalculatePlayerFocusCameraSettings(out float orthoSize) {
         IEnumerable<GameObject> ps = this.GetGameObjectsToTrack().Concat(this.additionalCameraTargets);
         if (ps.Count() == 0) {
             orthoSize = this.GetComponent<Camera>().orthographicSize;
@@ -94,18 +115,5 @@ public class TrackerCameraMovement : MonoBehaviour {
 
         Vector3 center = (min + max) / 2;
         return center - this.transform.forward * useDist + this.cameraOffset;
-    }
-
-    public virtual void LockTransform(Transform lockedTransform, bool snap = false) {
-        this.isLocked = true;
-        this.lockedTransform = lockedTransform;
-        if (snap) {
-            this.transform.position = lockedTransform.transform.position;
-            this.transform.rotation = lockedTransform.transform.rotation;
-        }
-    }
-
-    public virtual void UnlockTransform() {
-        this.isLocked = false;
     }
 }
