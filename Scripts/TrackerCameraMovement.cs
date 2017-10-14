@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Moves the camera to track multiple targets.
@@ -12,8 +13,10 @@ public class TrackerCameraMovement : MonoBehaviour {
     protected static List<GameObject> EMPTY_LIST = new List<GameObject>();
 
     // Inspector Fields
-    public float minDistanceBetweenPlayers = 3f;
-    public float maxDistanceBetweenPlayers = 20f;
+    [FormerlySerializedAs("minDistanceBetweenPlayers")]
+    public float minDistanceBetweenTargets = 3f;
+    [FormerlySerializedAs("maxDistanceBetweenPlayers")]
+    public float maxDistanceBetweenTargets = 20f;
 
     public float minCameraSize = 5;
     public float maxCameraSize = 10;
@@ -47,7 +50,7 @@ public class TrackerCameraMovement : MonoBehaviour {
 
         // Find the desired position for the camera...
         if (this.GetGameObjectsToTrack().Count() > 0 || this.additionalCameraTargets.Count > 0) {
-            desired = this.CalculatePlayerFocusCameraSettings(out desiredSize);
+            desired = this.CalculateTargetFocusCameraSettings(out desiredSize);
         }
         if (this.limitCameraMovement != null) {
             desired = this.limitCameraMovement(desired);
@@ -77,7 +80,7 @@ public class TrackerCameraMovement : MonoBehaviour {
 
     public Vector3 CalculateDesiredPosition() {
         float _orthoSize;
-        return CalculatePlayerFocusCameraSettings(out _orthoSize);
+        return CalculateTargetFocusCameraSettings(out _orthoSize);
     }
 
     public virtual void LockTransform(Transform lockedTransform, bool snap = false) {
@@ -93,22 +96,22 @@ public class TrackerCameraMovement : MonoBehaviour {
         this.isLocked = false;
     }
 
-    private Vector3 CalculatePlayerFocusCameraSettings(out float orthoSize) {
-        IEnumerable<GameObject> ps = this.GetGameObjectsToTrack().Concat(this.additionalCameraTargets);
-        if (ps.Count() == 0) {
+    private Vector3 CalculateTargetFocusCameraSettings(out float orthoSize) {
+        IEnumerable<GameObject> targets = this.GetGameObjectsToTrack().Concat(this.additionalCameraTargets);
+        if (targets.Count() == 0) {
             orthoSize = this.GetComponent<Camera>().orthographicSize;
             return this.transform.position;
         }
 
-        Vector3 min = new Vector3(ps.Min(p => p.transform.position.x),
-                                  ps.Min(p => p.transform.position.y),
-                                  ps.Min(p => p.transform.position.z));
-        Vector3 max = new Vector3(ps.Max(p => p.transform.position.x),
-                                  ps.Max(p => p.transform.position.y),
-                                  ps.Max(p => p.transform.position.z));
+        Vector3 min = new Vector3(targets.Min(t => t.transform.position.x),
+                                  targets.Min(t => t.transform.position.y),
+                                  targets.Min(t => t.transform.position.z));
+        Vector3 max = new Vector3(targets.Max(t => t.transform.position.x),
+                                  targets.Max(t => t.transform.position.y),
+                                  targets.Max(t => t.transform.position.z));
 
         float dist = (min - max).magnitude;
-        float percentDistance = Mathf.InverseLerp(minDistanceBetweenPlayers, maxDistanceBetweenPlayers, dist);
+        float percentDistance = Mathf.InverseLerp(minDistanceBetweenTargets, maxDistanceBetweenTargets, dist);
 
         float useDist = Mathf.Lerp(minDistanceFromWorld, maxDistanceFromWorld, percentDistance);
         orthoSize = Mathf.Lerp(minCameraSize, maxCameraSize, percentDistance);
