@@ -30,13 +30,13 @@ using InControl;
 			{
 				new InputControlMapping
 				{
-					Handle = "Fire - Mouse",
+					Handle = "Z",
 					Target = InputControlType.Action1,
 					Source = MouseButton0
 				},
 				new InputControlMapping
 				{
-					Handle = "Fire - Keyboard",
+					Handle = "Z",
 					Target = InputControlType.Action1,
 					// KeyCodeButton fires when any of the provided KeyCode params are down.
 					Source = KeyCodeButton( KeyCode.Return, KeyCode.Z )
