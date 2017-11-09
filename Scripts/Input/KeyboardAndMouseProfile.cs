@@ -43,11 +43,17 @@ using InControl;
 				},
 				new InputControlMapping
 				{
-					Handle = "AltFire",
+					Handle = "X",
 					Target = InputControlType.Action2,
 					Source = MouseButton2
 				},
-				new InputControlMapping
+                new InputControlMapping
+                {
+                    Handle = "X",
+                    Target = InputControlType.Action2,
+                    Source = KeyCodeButton( KeyCode.X )
+                },
+                new InputControlMapping
 				{
 					Handle = "Middle",
 					Target = InputControlType.Action3,
