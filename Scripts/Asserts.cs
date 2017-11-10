@@ -9,4 +9,10 @@ public static class Asserts {
             throw new NullReferenceException("This variable should be never be null!");
         }
     }
+
+    public static void AssertTrue(bool expression, string failureMessage) {
+        if (!expression) {
+            throw new Exception("Assertion failed: " + failureMessage);
+        }
+    }
 }
