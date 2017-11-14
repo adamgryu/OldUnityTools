@@ -74,11 +74,15 @@ public static class QuickUnityExtensions {
     public static string CamelCaseToSpaces(this string text) {
         return Regex.Replace(text, "(\\B[A-Z])", " $1");
     }
-    
+
     public static IEnumerable<Transform> GetChildren(this Transform transform) {
-        foreach(Transform child in transform) {
+        foreach (Transform child in transform) {
             yield return child;
         }
+    }
+
+    public static Vector3 TransformPointTo(this RectTransform from, Vector3 point, RectTransform to) {
+        return to.InverseTransformPoint(from.TransformPoint(point));
     }
 
     #region Collections
@@ -134,6 +138,17 @@ public static class QuickUnityExtensions {
             index++;
         }
         return minIndex;
+    }
+
+    public static int IndexOf<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate) {
+        int index = 0;
+        foreach (var item in source) {
+            if (predicate(item)) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
 
     public static IList<T> Shuffle<T>(this IList<T> list) {

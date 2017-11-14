@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 
 public static class Asserts {
-    public static void NotNull(object obj) {
+    public static void NotNull(object obj, string failureMessage = "") {
         if (obj == null) {
-            throw new NullReferenceException("This variable should be never be null!");
+            throw new NullReferenceException("Not Null Assertion failed: " + failureMessage);
         }
     }
 
