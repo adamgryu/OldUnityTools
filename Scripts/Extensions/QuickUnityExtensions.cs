@@ -85,6 +85,13 @@ public static class QuickUnityExtensions {
         return to.InverseTransformPoint(from.TransformPoint(point));
     }
 
+    public static Vector2 WorldToRectTransform(Vector3 worldPosition, RectTransform toTransform) {
+        Vector2 viewportPoint = Camera.main.WorldToViewportPoint(worldPosition);
+        RectTransform canvasRect = toTransform.GetComponentInParent<Canvas>().GetComponent<RectTransform>();
+        Vector2 canvasPoint = Vector2.Scale(canvasRect.sizeDelta, (viewportPoint - Vector2.one * 0.5f));
+        return TransformPointTo(canvasRect, canvasPoint, toTransform);
+    }
+
     #region Collections
 
     public static void BufferedForEach<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> performIf) {
