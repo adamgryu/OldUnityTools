@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 public class Timer {
 
+    public const string TIMER_CONTROLLER_NAME = "TimerController";
+
     public bool isLooped { get; set; }
     public bool isPaused { get; set; }
 
@@ -87,10 +89,7 @@ public class Timer {
     }
 
     public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useRealTime = false, MonoBehaviour autoCancelObj = null) {
-        if (sceneTimerController == null && !TimerController.applicationIsQuitting) {
-            GameObject obj = new GameObject("TimerController");
-            sceneTimerController = obj.AddComponent<TimerController>();
-        }
+        EnsureTimerControllerExists();
 
         Timer timer = new Timer(duration, onComplete, isLooped, useRealTime);
         Timer.timersToAddBuffer.Add(timer);
@@ -100,6 +99,23 @@ public class Timer {
         }
 
         return timer;
+    }
+
+    private static void EnsureTimerControllerExists() {
+        if (TimerController.applicationIsQuitting) {
+            return;
+        }
+
+        // HACK: Search for another time controller if the current one is disabled; this is needed in my current project.
+        if (sceneTimerController == null || !sceneTimerController.isActiveAndEnabled) {
+            var existingObj = GameObject.Find(TIMER_CONTROLLER_NAME);
+            if (existingObj != null) {
+                sceneTimerController = existingObj.GetComponent<TimerController>();
+            } else {
+                GameObject obj = new GameObject(TIMER_CONTROLLER_NAME);
+                sceneTimerController = obj.AddComponent<TimerController>();
+            }
+        }
     }
 
     public static void UpdateAllRegisteredTimers() {

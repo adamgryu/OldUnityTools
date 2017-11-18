@@ -3,7 +3,8 @@ using System.Collections;
 
 /// <summary>
 /// Global Singletons are created when needed.
-/// They are never present in a scene, and will be created as needed.
+/// They are never initially present in a scene, and are lazily spawned.
+/// They belong to DontDestroyOnLoad and persist forever.
 /// </summary>
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
     private static T _instance;

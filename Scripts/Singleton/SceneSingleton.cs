@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 /// <summary>
 /// Represents a single-instance object that is placed in scenes.
@@ -12,6 +11,11 @@ public class SceneSingleton<T> : MonoBehaviour where T : MonoBehaviour {
 
     public static T instance {
         get {
+            // HACK: Search for a new one if the current is disabled; this is needed for my current project.
+            if (_instance != null && !_instance.isActiveAndEnabled) {
+                _instance = null;
+            }
+
             if (_instance == null) {
                 _instance = (T)GameObject.FindObjectOfType(typeof(T));
 
@@ -29,6 +33,10 @@ public class SceneSingleton<T> : MonoBehaviour where T : MonoBehaviour {
 
             return _instance;
         }
+    }
+
+    protected virtual void Awake() {
+        // Placeholder.
     }
 
     protected virtual void OnDestroy() {
