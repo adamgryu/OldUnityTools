@@ -8,6 +8,9 @@ public class Timer {
 
     public const string TIMER_CONTROLLER_NAME = "TimerController";
 
+    private static TimerController sceneTimeController = null;
+
+
     public bool isLooped { get; set; }
     public bool isPaused { get; set; }
 
@@ -15,15 +18,12 @@ public class Timer {
     public bool isCancelled { get; private set; }
     public bool isCompleted { get; private set; }
 
+    private float accumulatedTime;
+
     private Action onComplete;
-    private float startTime;
     private bool usesRealTime;
     private bool hasAutoDestroyOwner;
     private MonoBehaviour autoDestroyOwner;
-
-    private static List<Timer> timers = new List<Timer>();
-    private static List<Timer> timersToAddBuffer = new List<Timer>();
-    private static TimerController sceneTimerController = null;
 
     private Timer(float duration, Action onComplete, bool isLooped, bool usesRealTime) {
         this.duration = duration;
@@ -33,24 +33,20 @@ public class Timer {
         this.isCancelled = false;
         this.usesRealTime = usesRealTime;
 
-        this.startTime = this.GetTime();
-    }
-
-    private float GetTime() {
-        return this.usesRealTime ? Time.realtimeSinceStartup : Time.time;
+        this.accumulatedTime = 0;
     }
 
     private float GetDeltaTime() {
         if (this.usesRealTime) {
-            Debug.LogWarning("Delta time is NOT supported for realtime timers!");
-            return Time.deltaTime;
+            return Time.unscaledDeltaTime;
         } else {
             return Time.deltaTime;
         }
     }
 
-    private float GetFireTime() {
-        return this.startTime + this.duration;
+    public void SetAutoDestroyOwner(MonoBehaviour owner) {
+        this.autoDestroyOwner = owner;
+        this.hasAutoDestroyOwner = owner != null;
     }
 
     public bool IsDone() {
@@ -62,19 +58,16 @@ public class Timer {
     }
 
     public void Update() {
-        if (this.isPaused) {
-            this.startTime += this.GetDeltaTime();
-            return;
-        }
-        if (this.IsDone()) {
+        if (this.IsDone() || this.isPaused) {
             return;
         }
 
-        if (this.GetTime() >= this.GetFireTime()) {
+        this.accumulatedTime += this.GetDeltaTime();
+        if (this.accumulatedTime >= this.duration) {
             this.onComplete();
 
             if (this.isLooped) {
-                this.startTime = this.GetTime();
+                this.accumulatedTime = 0;
             } else {
                 this.isCompleted = true;
             }
@@ -85,19 +78,15 @@ public class Timer {
         if (this.isCompleted) {
             return 1;
         }
-        return (this.GetTime() - this.startTime) / this.duration;
+        return this.accumulatedTime / this.duration;
     }
 
     public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useRealTime = false, MonoBehaviour autoCancelObj = null) {
         EnsureTimerControllerExists();
 
         Timer timer = new Timer(duration, onComplete, isLooped, useRealTime);
-        Timer.timersToAddBuffer.Add(timer);
-        timer.autoDestroyOwner = autoCancelObj;
-        if (autoCancelObj != null) {
-            timer.hasAutoDestroyOwner = true;
-        }
-
+        timer.SetAutoDestroyOwner(autoCancelObj);
+        sceneTimeController.AddTimer(timer);
         return timer;
     }
 
@@ -107,39 +96,14 @@ public class Timer {
         }
 
         // HACK: Search for another time controller if the current one is disabled; this is needed in my current project.
-        if (sceneTimerController == null || !sceneTimerController.isActiveAndEnabled) {
+        if (sceneTimeController == null || !sceneTimeController.isActiveAndEnabled) {
             var existingObj = GameObject.Find(TIMER_CONTROLLER_NAME);
             if (existingObj != null) {
-                sceneTimerController = existingObj.GetComponent<TimerController>();
+                sceneTimeController = existingObj.GetComponent<TimerController>();
             } else {
                 GameObject obj = new GameObject(TIMER_CONTROLLER_NAME);
-                sceneTimerController = obj.AddComponent<TimerController>();
+                sceneTimeController = obj.AddComponent<TimerController>();
             }
         }
-    }
-
-    public static void UpdateAllRegisteredTimers() {
-        Timer.timers.AddRange(Timer.timersToAddBuffer);
-        if (Timer.timersToAddBuffer.Count > 0) {
-            Timer.timersToAddBuffer = new List<Timer>();
-        }
-
-        bool anyDone = false;
-        foreach (Timer timer in Timer.timers) {
-            timer.Update();
-            anyDone |= timer.IsDone();
-        }
-
-        if (anyDone) {
-            Timer.timers = Timer.timers.Where((t) => !(t.IsDone())).ToList(); // TODO: Optimize?
-        }
-    }
-
-    public static void CancelAllRegisteredTimers() {
-        foreach (Timer timer in Timer.timers) {
-            timer.Cancel();
-        }
-
-        Timer.timers = new List<Timer>();
     }
 }

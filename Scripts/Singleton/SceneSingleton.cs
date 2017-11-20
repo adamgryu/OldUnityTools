@@ -14,20 +14,21 @@ public class SceneSingleton<T> : MonoBehaviour where T : MonoBehaviour {
             // HACK: Search for a new one if the current is disabled; this is needed for my current project.
             if (_instance != null && !_instance.isActiveAndEnabled) {
                 _instance = null;
+                Debug.Log("[SceneSingleton] The current instance of " + typeof(T) + " is inactive. Searching for an active one...");
             }
 
             if (_instance == null) {
                 _instance = (T)GameObject.FindObjectOfType(typeof(T));
 
                 if (GameObject.FindObjectsOfType(typeof(T)).Length > 1) {
-                    Debug.LogError("[Singleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
+                    Debug.LogError("[SceneSingleton] Something went really wrong - there should never be more than 1 singleton! Reopening the scene might fix it.");
                     return _instance;
                 }
 
                 if (_instance == null) {
-                    Debug.LogWarning("[Singleton] An instance of " + typeof(T) + " is needed in the scene, but none exists!");
+                    Debug.LogWarning("[SceneSingleton] An instance of " + typeof(T) + " is needed in the scene, but none exists!");
                 } else {
-                    Debug.Log("[Singleton] Using instance already created: " + _instance.gameObject.name);
+                    Debug.Log("[SceneSingleton] Using instance already created: " + _instance.gameObject.name);
                 }
             }
 
