@@ -16,23 +16,23 @@ public class Timer {
     private float accumulatedTime;
 
     private Action onComplete;
-    private bool usesRealTime;
+    private bool usesUnscaledTime;
     private bool hasAutoDestroyOwner;
     private MonoBehaviour autoDestroyOwner;
 
-    private Timer(float duration, Action onComplete, bool isLooped, bool usesRealTime) {
+    private Timer(float duration, Action onComplete, bool isLooped, bool useUnscaledTime) {
         this.duration = duration;
         this.onComplete = onComplete;
 
         this.isLooped = isLooped;
         this.isCancelled = false;
-        this.usesRealTime = usesRealTime;
+        this.usesUnscaledTime = useUnscaledTime;
 
         this.accumulatedTime = 0;
     }
 
     private float GetDeltaTime() {
-        if (this.usesRealTime) {
+        if (this.usesUnscaledTime) {
             return Time.unscaledDeltaTime;
         } else {
             return Time.deltaTime;
@@ -76,8 +76,8 @@ public class Timer {
         return this.accumulatedTime / this.duration;
     }
 
-    public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useRealTime = false, MonoBehaviour autoCancelObj = null) {
-        Timer timer = new Timer(duration, onComplete, isLooped, useRealTime);
+    public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useUnscaledTime = false, MonoBehaviour autoCancelObj = null) {
+        Timer timer = new Timer(duration, onComplete, isLooped, useUnscaledTime);
         timer.SetAutoDestroyOwner(autoCancelObj);
         TimerServiceLocator.instance.timerManager.AddTimer(timer);
         return timer;

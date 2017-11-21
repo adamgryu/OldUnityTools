@@ -83,11 +83,11 @@ public abstract class ServiceLocator<TMyType> : Singleton<TMyType> where TMyType
 
     private void Log(Type service, string message) {
         string serviceText = service != null ? service.Name + ": " : "";
-        Debug.Log("[ServiceLocator] " + serviceText + message);
+        Debug.Log("[" + GetType().Name + "] " + serviceText + message);
     }
 
     private void LogError(Type service, string warning) {
         string serviceText = service != null ? service.Name + ": " : "";
-        Debug.LogError("[ServiceLocator] " + serviceText + warning);
+        Debug.LogError("[" + GetType().Name + "] " + serviceText + warning);
     }
 }
