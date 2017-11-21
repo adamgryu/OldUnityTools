@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using UnityEngine.SceneManagement;
 
 public static class QuickUnityExtensions {
 
@@ -92,6 +93,22 @@ public static class QuickUnityExtensions {
         return TransformPointTo(canvasRect, canvasPoint, toTransform);
     }
 
+    public static IEnumerable<T> FindComponentsOfTypeInScene<T>(this Scene scene) where T : Component {
+        foreach (GameObject rootObj in scene.GetRootGameObjects()) {
+            foreach (T foundObj in rootObj.GetComponentsInChildren<T>()) {
+                yield return foundObj;
+            }
+        }
+    }
+
+    public static IEnumerable<Component> FindComponentsOfTypeInScene(this Scene scene, Type type) {
+        foreach (GameObject rootObj in scene.GetRootGameObjects()) {
+            foreach (Component foundObj in rootObj.GetComponentsInChildren(type)) {
+                yield return foundObj;
+            }
+        }
+    }
+
     #region Collections
 
     public static void BufferedForEach<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> performIf) {
@@ -156,6 +173,23 @@ public static class QuickUnityExtensions {
             index++;
         }
         return -1;
+    }
+
+    public static bool AtLeast<T>(this IEnumerable<T> collection, int count, Func<T, bool> predicate = null) {
+        if (predicate == null) {
+            predicate = item => true;
+        }
+
+        int itemsSeen = 0;
+        foreach (T item in collection) {
+            if (predicate(item)) {
+                itemsSeen++;
+                if (itemsSeen == count) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static IList<T> Shuffle<T>(this IList<T> list) {

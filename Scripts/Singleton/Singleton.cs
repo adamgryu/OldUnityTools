@@ -50,7 +50,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
                                 return null;
                             }
                             GameObject singleton = GameObject.Instantiate<GameObject>(prefab);
-                            singleton.name = "(resource global singleton)" + singleton.name;
+                            singleton.name = "(Resource Global Singleton) " + singleton.name;
                             _instance = singleton.GetComponent<T>();
                             if (_instance == null) {
                                 Debug.LogError("A prefab was loaded for the singleton, but the component was not on it!");
@@ -64,7 +64,7 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour {
                             // Create a singleton component in the world.
                             GameObject singleton = new GameObject();
                             _instance = singleton.AddComponent<T>();
-                            singleton.name = "(global singleton) " + typeof(T).ToString();
+                            singleton.name = "(Global Singleton) " + typeof(T).ToString();
                             DontDestroyOnLoad(singleton);
                             Debug.Log("[Singleton] An instance of " + typeof(T) +
                                 " is needed in the scene, so '" + singleton +

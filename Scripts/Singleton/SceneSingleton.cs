@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Represents a single-instance object that is placed in scenes.
@@ -6,6 +7,7 @@
 /// 
 /// I think this class is still kind of buggy in some situations, I'll fix it later.
 /// </summary>
+[Obsolete("SceneSingletons aren't really singletons. Use the ServiceLocator instead.")]
 public class SceneSingleton<T> : MonoBehaviour where T : MonoBehaviour {
     private static T _instance;
 
