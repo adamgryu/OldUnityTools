@@ -10,8 +10,8 @@ using UnityEngine.SceneManagement;
 /// reference. The cache is cleared when the active scene changes to point to the services in the new
 /// scene.
 /// </summary>
-/// <typeparam name="T">The concrete type that is used for singleton access.</typeparam>
-public abstract class ServiceLocator<T> : Singleton<T> where T : MonoBehaviour {
+/// <typeparam name="TMyType">The concrete type that is used for singleton access.</typeparam>
+public abstract class ServiceLocator<TMyType> : Singleton<TMyType> where TMyType : MonoBehaviour {
 
     protected Dictionary<Type, ServiceMonoBehaviour> cachedSceneServices = new Dictionary<Type, ServiceMonoBehaviour>();
 
@@ -27,14 +27,14 @@ public abstract class ServiceLocator<T> : Singleton<T> where T : MonoBehaviour {
     /// <summary>
     /// Looks for a service that exists as a MonoBehaviour in the current scene.
     /// </summary>
-    protected T LocateServiceInActiveScene<T>() where T : ServiceMonoBehaviour {
+    protected TService LocateServiceInActiveScene<TService>() where TService : ServiceMonoBehaviour {
         // Try and find a cached version of the service.
-        Type serviceType = typeof(T);
+        Type serviceType = typeof(TService);
         if (cachedSceneServices.ContainsKey(serviceType)) {
-            return (T)cachedSceneServices[serviceType];
+            return (TService)cachedSceneServices[serviceType];
         }
 
-        T foundService = SceneManager.GetActiveScene().FindComponentsOfTypeInScene<T>().FirstOrDefault();
+        TService foundService = SceneManager.GetActiveScene().FindComponentsOfTypeInScene<TService>().FirstOrDefault();
         if (foundService == null) {
             LogError(serviceType, "Service is not present in this scene!");
         }
