@@ -27,8 +27,8 @@ public abstract class ServiceLocator<TMyType> : Singleton<TMyType> where TMyType
     }
 
     private void OnActiveSceneChange(Scene oldScene, Scene newScene) {
-        cachedSceneServices.Clear();
         Log("Clearing the cached scene services.");
+        cachedSceneServices.Clear();
     }
 
     /// <summary>
@@ -46,7 +46,12 @@ public abstract class ServiceLocator<TMyType> : Singleton<TMyType> where TMyType
         // Try and find a cached version of the service.
         Type serviceType = typeof(TService);
         if (cachedSceneServices.ContainsKey(serviceType)) {
-            return (TService)cachedSceneServices[serviceType];
+            var cached = (TService)cachedSceneServices[serviceType];
+            if (cached != null) {
+                return cached;
+            } else {
+                Log(serviceType, "The cached service was null! Hopefully it was destroyed in a scene transition?");
+            }
         }
 
         TService foundService = SceneManager.GetActiveScene().FindComponentsOfTypeInScene<TService>().FirstOrDefault();
