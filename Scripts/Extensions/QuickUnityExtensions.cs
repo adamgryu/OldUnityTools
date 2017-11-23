@@ -109,6 +109,10 @@ public static class QuickUnityExtensions {
         }
     }
 
+    public static IEnumerable<T> Yield<T>(this T item) {
+        yield return item;
+    }
+
     #region Collections
 
     public static void BufferedForEach<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> performIf) {
