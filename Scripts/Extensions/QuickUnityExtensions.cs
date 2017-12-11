@@ -82,6 +82,12 @@ public static class QuickUnityExtensions {
         }
     }
 
+    public static void DestroyChildren(this Transform transform) {
+        foreach (Transform child in transform) {
+            GameObject.Destroy(child.gameObject);
+        }
+    }
+
     public static Vector3 TransformPointTo(this RectTransform from, Vector3 point, RectTransform to) {
         return to.InverseTransformPoint(from.TransformPoint(point));
     }
