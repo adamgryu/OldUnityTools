@@ -92,4 +92,10 @@ namespace QuickUnityTools.Audio {
             return audioSource;
         }
     }
+
+    public static class SoundPlayerExtensions {
+        public static AudioSource Play(this AudioClip clip) {
+            return SoundPlayer.instance.Play(clip);
+        }
+    }
 }
