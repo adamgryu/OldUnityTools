@@ -121,6 +121,13 @@ public static class QuickUnityExtensions {
 
     #region Collections
 
+    public static void IndexedForEach<T>(this IEnumerable<T> collection, Action<T, int> action) {
+        int i = 0;
+        foreach (T element in collection) {
+            action(element, i++);
+        }
+    }
+
     public static void BufferedForEach<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> performIf) {
         LinkedList<T> buffer = new LinkedList<T>();
         foreach (T obj in collection) {
