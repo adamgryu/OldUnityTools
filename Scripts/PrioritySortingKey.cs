@@ -7,7 +7,7 @@ using System.Text;
 /// For use with SortedList.
 /// Sorts the items by priority, with using time as a tiebreaker.
 /// </summary>
-public struct PrioritySortingKey : IComparable {
+public class PrioritySortingKey : IComparable {
     private int priority;
     private int time;
 

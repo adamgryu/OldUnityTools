@@ -55,9 +55,9 @@ using InControl;
                 },
                 new InputControlMapping
 				{
-					Handle = "Middle",
+					Handle = "C",
 					Target = InputControlType.Action3,
-					Source = MouseButton1
+					Source = KeyCodeButton( KeyCode.C )
 				},
 				new InputControlMapping
 				{
