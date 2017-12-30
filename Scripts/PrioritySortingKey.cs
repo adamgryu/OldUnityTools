@@ -11,7 +11,7 @@ public class PrioritySortingKey : IComparable {
     private int priority;
     private int time;
 
-    public PrioritySortingKey(int priority, int time) {
+    public PrioritySortingKey(int priority, int time = 0) {
         this.priority = priority;
         this.time = time;
     }

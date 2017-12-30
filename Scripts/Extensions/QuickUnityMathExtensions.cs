@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public static class QuickUnityMathExtensions {
 
@@ -38,6 +39,10 @@ public static class QuickUnityMathExtensions {
 
     public static Vector2 SetY(this Vector2 vector, float y) {
         return new Vector2(vector.x, y);
+    }
+
+    public static Vector3 TransformComponents(this Vector3 vector, Func<float, float> transformation) {
+        return new Vector3(transformation(vector.x), transformation(vector.y), transformation(vector.z));
     }
 
     public static int Mod(this int x, int m) {
