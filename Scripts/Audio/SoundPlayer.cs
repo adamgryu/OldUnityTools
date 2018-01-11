@@ -71,16 +71,12 @@ namespace QuickUnityTools.Audio {
             audioSource.outputAudioMixerGroup = this.soundMixerGroup;
 
             audioSource.Play();
-            GameObject.Destroy(audioSource.gameObject, clip.length + 0.1f); // Destroy object after clip duration.
 
-            // If the game is paused, create a timer to handle cleaning up the object...
-            if (Time.timeScale == 0) {
-                Timer.Register(clip.length + 0.1f, () => {
-                    if (audioSource != null) {
-                        GameObject.Destroy(audioSource.gameObject);
-                    }
-                }, false, true);
-            }
+            Timer.Register(clip.length + 0.1f, () => {
+                if (audioSource != null) {
+                    GameObject.Destroy(audioSource.gameObject);
+                }
+            }, false, true);
             return audioSource;
         }
 

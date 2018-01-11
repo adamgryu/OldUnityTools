@@ -1,71 +1,109 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Adds a shaking effect to the camera which can be triggered through code. A random vector is
 /// added to the camera position on OnPreRender() if a shake is occuring.
 /// </summary>
-[ExecuteInEditMode]
 [RequireComponent(typeof(Camera))]
 public class CameraShake : MonoBehaviour {
 
-    const float SHAKE_DELTA = 0.01f;
+    [Serializable]
+    public class ShakeConfiguration {
+        [Tooltip("The maximum distance the camera can move from its normal position while shaking.")]
+        public float maxShakeDistance = 0.3f;
 
-    [Tooltip("The maximum distance the camera can move from its normal position while shaking.")]
-    public float shakeDistance = 0.3f;
+        [Tooltip("The time (in seconds) it takes for the camera to stop shaking.")]
+        public float shakeTime = 1;
 
-    [Tooltip("The time (in seconds) it takes for the camera to stop shaking.")]
-    public float shakeCooldownTime = 1;
+        [Tooltip("The strength of the camera shake over the course of its cooldown time.")]
+        public AnimationCurve shakeDistanceOverTime = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    }
 
-    [Tooltip("The strength of the camera shake over the course of its cooldown time.")]
-    public AnimationCurve shakeCooldownCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    public enum Intensity {
+        Tiny,
+        Gentle,
+        Moderate,
+        Heavy,
+        Extreme,
+    }
 
-    public bool isShaking { get { return this.shakeCooldown > SHAKE_DELTA; } }
+    public ShakeConfiguration tinyShake;
+    public ShakeConfiguration gentleShake;
+    public ShakeConfiguration moderateShake;
+    public ShakeConfiguration heavyShake;
+    public ShakeConfiguration extremeShake;
+
+    public bool isShaking { get { return this.shakeCooldown > 0.05f; } }
+
+    private Dictionary<Intensity, ShakeConfiguration> shakeConfigs;
+    private Intensity lastIntensity;
+    private ShakeConfiguration shakeConfig;
 
     private float shakeCooldown;
-    private float shakeStrength;
     private Vector3 lastShakeVector;
 
-    private float adjustedCooldownTime { get { return this.shakeCooldownTime * this.shakeStrength; } }
+    private void Awake() {
+        shakeConfigs = new Dictionary<Intensity, ShakeConfiguration>();
+        shakeConfigs[Intensity.Tiny] = tinyShake;
+        shakeConfigs[Intensity.Gentle] = gentleShake;
+        shakeConfigs[Intensity.Moderate] = moderateShake;
+        shakeConfigs[Intensity.Heavy] = heavyShake;
+        shakeConfigs[Intensity.Extreme] = extremeShake;
+    }
 
     /// <summary>
     /// Shakes the camera.
     /// </summary>
-    /// <param name="shakeStrength">A multiplier applied to the default shake distance and shake cooldown time.</param>
-    /// <param name="overrideShakeStrength">If true, the new shake strength will be applied even if it is smaller than the current shake.</param>
-    public void Shake(float shakeStrength = 1, bool overrideShakeStrength = false) {
-        this.shakeStrength = (overrideShakeStrength || !this.isShaking) ? shakeStrength : Mathf.Max(shakeStrength, this.shakeStrength);
-        this.shakeCooldown = this.adjustedCooldownTime;
+    public void Shake(Intensity intensity) {
+        if (!isShaking || intensity > lastIntensity) {
+            lastIntensity = intensity;
+            shakeConfig = shakeConfigs[intensity];
+            shakeCooldown = shakeConfig.shakeTime;
+        }
     }
 
     /// <summary>
     /// Shakes all cameras in the scene.
     /// </summary>
-    public static void ShakeAllCameras(float shakeStrength = 1) {
+    public static void ShakeAllCameras(Intensity intensity) {
         foreach (Camera camera in Camera.allCameras) {
             CameraShake shake = camera.GetComponent<CameraShake>();
             if (shake != null) {
-                shake.Shake(shakeStrength);
+                shake.Shake(intensity);
             }
         }
     }
 
     private void Update() {
-        if (this.isShaking) {
-            this.shakeCooldown = Mathf.MoveTowards(this.shakeCooldown, 0, Time.deltaTime);
+        if (isShaking) {
+            shakeCooldown = Mathf.MoveTowards(shakeCooldown, 0, Time.unscaledDeltaTime);
+        }
+
+        // Debug shakes by holding R, T, Y, and then pressing a number from 1 to 5.
+        if (Input.GetKey(KeyCode.R) && Input.GetKey(KeyCode.T) && Input.GetKey(KeyCode.Y)) {
+            for (KeyCode key = KeyCode.Alpha1; key <= KeyCode.Alpha5; key++) {
+                if (Input.GetKeyDown(key)) {
+                    Shake((Intensity)(int)(key - KeyCode.Alpha1));
+                }
+            }
         }
     }
 
     private void OnPreRender() {
-        if (this.shakeCooldown > SHAKE_DELTA) {
-            float shakePercent = this.shakeCooldown / this.adjustedCooldownTime;
-            this.lastShakeVector = Random.insideUnitSphere * this.shakeCooldownCurve.Evaluate(shakePercent) * this.shakeStrength * this.shakeDistance;
+        if (isShaking) {
+            float shakePercent = shakeCooldown / shakeConfig.shakeTime;
+            this.lastShakeVector = UnityEngine.Random.insideUnitSphere
+                * shakeConfig.shakeDistanceOverTime.Evaluate(shakePercent)
+                * shakeConfig.maxShakeDistance;
             this.transform.position += this.lastShakeVector;
         }
     }
 
     private void OnPostRender() {
-        if (this.shakeCooldown > SHAKE_DELTA) {
+        if (isShaking) {
             this.transform.position -= this.lastShakeVector;
         }
     }
