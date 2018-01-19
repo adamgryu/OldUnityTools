@@ -32,20 +32,8 @@ using InControl;
 				{
 					Handle = "Z",
 					Target = InputControlType.Action1,
-					Source = MouseButton0
-				},
-				new InputControlMapping
-				{
-					Handle = "Z",
-					Target = InputControlType.Action1,
 					// KeyCodeButton fires when any of the provided KeyCode params are down.
 					Source = KeyCodeButton( KeyCode.Return, KeyCode.Z )
-				},
-				new InputControlMapping
-				{
-					Handle = "X",
-					Target = InputControlType.Action2,
-					Source = MouseButton2
 				},
                 new InputControlMapping
                 {
@@ -61,7 +49,7 @@ using InControl;
 				},
 				new InputControlMapping
 				{
-					Handle = "Jump",
+					Handle = "Space",
 					Target = InputControlType.Action4,
 					Source = KeyCodeButton( KeyCode.Space )
 				},

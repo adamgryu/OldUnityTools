@@ -116,7 +116,7 @@ public class CustomMenuItems {
         // Select our GameObject.
         SelectObject(gameObject);
         // Create a new key event (RightArrow for collapsing, LeftArrow for folding)
-        var key = new Event { keyCode = collapse ? KeyCode.RightArrow : KeyCode.LeftArrow, type = EventType.keyDown };
+        var key = new Event { keyCode = collapse ? KeyCode.RightArrow : KeyCode.LeftArrow, type = EventType.KeyDown };
         // Finally, send the window the event.
         hierarchy.SendEvent(key);
     }
