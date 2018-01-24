@@ -79,6 +79,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
     #region UnityEvents
 
     protected virtual void Awake() {
+        this.isGrounded = true;
         this.body = this.GetComponent<Rigidbody>();
         if (this.forceApplyPosition == null) {
             this.forceApplyPosition = this.gameObject;
