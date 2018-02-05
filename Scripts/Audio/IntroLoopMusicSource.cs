@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 namespace QuickUnityTools.Audio {
     public class IntroLoopMusicSource : MonoBehaviour {
@@ -10,6 +12,17 @@ namespace QuickUnityTools.Audio {
 
         public MusicData music;
         public AudioMixerGroup mixerGroup;
+
+        private float volume {
+            get { return _volume; }
+            set {
+                _volume = value;
+                if (audioSources != null) {
+                    foreach (AudioSource source in audioSources) { source.volume = value; }
+                }
+            }
+        }
+        private float _volume = 1;
 
         private AudioSource[] audioSources;
         private float introTime { get { return ((music.beatsPerMeasure * music.introMeasures) / music.beatsPerMinute) * SECONDS_IN_MINUTE; } }
@@ -20,14 +33,37 @@ namespace QuickUnityTools.Audio {
         private int numberOfLoopsScheduled;
         private Timer loopTimer;
 
-        void Start() {
+        private Timer fadeOutTimer;
+
+        private void Start() {
             audioSources = new AudioSource[2];
             for (int i = 0; i < audioSources.Length; i++) {
                 audioSources[i] = gameObject.AddComponent<AudioSource>();
                 audioSources[i].clip = music.clip;
                 audioSources[i].outputAudioMixerGroup = mixerGroup;
+                audioSources[i].volume = volume;
             }
             Play();
+
+            // HACK: For a dirty and cheap way to implement fade out.
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoad;
+        }
+
+        private void OnDestroy() {
+            SceneManager.sceneLoaded -= OnSceneLoad;
+        }
+
+        private void OnSceneLoad(Scene scene, LoadSceneMode loadmode) {
+            var timer = this.RegisterTimer(0.5f, () => {
+                GameObject.Destroy(gameObject);
+            });
+        }
+
+        private void Update() {
+            if (fadeOutTimer != null) {
+                volume = fadeOutTimer.GetPercentageComplete();
+            }
         }
 
         public void Play() {
