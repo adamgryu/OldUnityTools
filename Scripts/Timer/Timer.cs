@@ -82,4 +82,11 @@ public class Timer {
         TimerServiceLocator.instance.timerManager.AddTimer(timer);
         return timer;
     }
+
+    public static void Cancel(Timer timer) {
+        if (timer != null) {
+            timer.Cancel();
+        }
+    }
+
 }
