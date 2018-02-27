@@ -4,6 +4,12 @@ using System.Text;
 
 public struct Vector2Int {
 
+    public static readonly Vector2Int[] MAIN_DIRECTIONS = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) };
+    public static readonly Vector2Int[] ALL_DIRECTIONS = new Vector2Int[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1), new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) };
+    public static readonly Vector2Int zero = new Vector2Int(0, 0);
+    public static readonly Vector2Int unitX = new Vector2Int(1, 0);
+    public static readonly Vector2Int unitY = new Vector2Int(0, 1);
+
     public int x;
     public int y;
 
@@ -20,6 +26,10 @@ public struct Vector2Int {
         return new Vector3(x, y, 0);
     }
 
+    public Vector2 ToV2() {
+        return new Vector2(x, y);
+    }
+
     public override bool Equals(object obj) {
         return (obj is Vector2Int) ? this == ((Vector2Int)obj) : false;
     }
@@ -30,6 +40,10 @@ public struct Vector2Int {
 
     public override int GetHashCode() {
         return this.x + this.y;
+    }
+
+    public Vector2Int TurnClockwise() {
+        return new Vector2Int(-y, x);
     }
 
     public override string ToString() {

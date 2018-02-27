@@ -12,7 +12,12 @@ public abstract class TriggerCollidersTracker<T> : MonoBehaviour {
     }
 
     protected virtual void Update() {
-        this.collidingColliders.BufferedForEach(c => c == null || !c.enabled || !c.gameObject.activeInHierarchy, this.MarkColliderRemoved);
+        for (int i = collidingColliders.Count - 1; i >= 0; i--) {
+            var collider = collidingColliders[i];
+            if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) {
+                this.MarkColliderRemoved(collider);
+            }
+        }
     }
 
     private void OnTriggerEnter(Collider collider) {
