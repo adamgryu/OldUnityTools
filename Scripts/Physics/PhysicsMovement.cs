@@ -80,8 +80,14 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// </summary>
     protected Rigidbody body;
 
-    private Collider myCollider;
+    /// <summary>
+    /// A reference to the collider for this object.
+    /// </summary>
+    protected Collider myCollider;
 
+    /// <summary>
+    /// The position where the ground raycast starts.
+    /// </summary>
     private Vector3 groundRaycastStart { get { return myCollider.bounds.center + Vector3.down * (myCollider.bounds.extents.y + midairRaycastBottomOffset); } }
 
 
