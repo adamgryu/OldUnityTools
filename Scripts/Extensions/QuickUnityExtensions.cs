@@ -128,6 +128,10 @@ public static class QuickUnityExtensions {
         return SoundPlayer.instance.Play(clip);
     }
 
+    public static bool IncludesLayer(this LayerMask mask, int layer) {
+        return mask == (mask | (1 << layer));
+    }
+
     #region Collections
 
     public static void IndexedForEach<T>(this IEnumerable<T> collection, Action<T, int> action) {

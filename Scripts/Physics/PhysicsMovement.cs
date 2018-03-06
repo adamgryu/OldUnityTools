@@ -36,7 +36,12 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// <summary>
     /// The length of the ray that is shot beneath the character to determine if it is grounded.
     /// </summary>
-    public float midairRayLength = 1;
+    public float midairRaycastDistance = 0.2f;
+
+    /// <summary>
+    /// The offset of the ray from the bottom of the collider that determines if it is grounded.
+    /// </summary>
+    public float midairRaycastBottomOffset = -0.3f;
 
     /// <summary>
     /// The size of the sphere-cast that is shot to determine if it is grounded.
@@ -75,12 +80,17 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// </summary>
     protected Rigidbody body;
 
+    private Collider myCollider;
+
+    private Vector3 groundRaycastStart { get { return myCollider.bounds.center + Vector3.down * (myCollider.bounds.extents.y + midairRaycastBottomOffset); } }
+
 
     #region UnityEvents
 
     protected virtual void Awake() {
         this.isGrounded = true;
         this.body = this.GetComponent<Rigidbody>();
+        this.myCollider = this.GetComponent<Collider>();
         if (this.forceApplyPosition == null) {
             this.forceApplyPosition = this.gameObject;
         }
@@ -105,7 +115,13 @@ public abstract class PhysicsMovement : MonoBehaviour {
     }
 
     protected virtual void OnDrawGizmos() {
-        Gizmos.DrawWireSphere(this.transform.position - Vector3.up * this.midairRayLength, this.midairRayRadius);
+        if (!myCollider) {
+            this.myCollider = GetComponent<Collider>();
+        }
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(groundRaycastStart, groundRaycastStart + Vector3.down * this.midairRaycastDistance);
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(groundRaycastStart + Vector3.down * this.midairRaycastDistance, this.midairRayRadius);
     }
 
     #endregion
@@ -134,7 +150,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
 
     public virtual bool CheckIfGrounded() {
         RaycastHit hit;
-        bool result = Physics.SphereCast(new Ray(this.transform.position, Vector3.down), this.midairRayRadius, out hit, this.midairRayLength, this.groundRaycastMask.value);
+        bool result = Physics.SphereCast(new Ray(groundRaycastStart, Vector3.down), this.midairRayRadius, out hit, this.midairRaycastDistance, this.groundRaycastMask.value);
         return result;
     }
 

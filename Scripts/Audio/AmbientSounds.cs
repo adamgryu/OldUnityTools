@@ -24,7 +24,11 @@ namespace QuickUnityTools.Audio {
             manager.UpdateSounds(soundsInScene);
         }
 
-        public class AmbientSoundManager : Singleton<AmbientSoundManager> {
+        public void UpdateSounds(AmbientSound[] sounds) {
+            AmbientSoundManager.instance.UpdateSounds(sounds);
+        }
+
+        private class AmbientSoundManager : Singleton<AmbientSoundManager> {
             public AudioMixerGroup mixerGroup;
             public float fadeTime = 1f;
 
