@@ -205,6 +205,14 @@ public static class QuickUnityExtensions {
         return -1;
     }
 
+    public static int LastIndexOf<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate) {
+        int reverseIndex = source.Reverse().IndexOf(predicate);
+        if (reverseIndex == -1) {
+            return -1;
+        }
+        return source.Count() - 1 - reverseIndex;
+    }
+
     public static bool AtLeast<T>(this IEnumerable<T> collection, int count, Func<T, bool> predicate = null) {
         if (predicate == null) {
             predicate = item => true;
