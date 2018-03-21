@@ -11,7 +11,7 @@ using UnityEngine;
 public abstract class PhysicsMovement : MonoBehaviour {
 
     const float DESIRED_DELTA_TIME = 1 / 60f;
-    const float EPSILON = 0.25f;
+    const float EPSILON = 0.001f;
 
     /// <summary>
     /// The movement velocity of the character that we try to reach.
@@ -78,7 +78,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// <summary>
     ///  A reference to the rigidbody for this object.
     /// </summary>
-    protected Rigidbody body;
+    public Rigidbody body { get; protected set; }
 
     /// <summary>
     /// A reference to the collider for this object.
@@ -115,8 +115,8 @@ public abstract class PhysicsMovement : MonoBehaviour {
         }
 
         // Stop moving if we close to stopping.
-        if (this.body.velocity.sqrMagnitude <= EPSILON * EPSILON) {
-            this.body.velocity = Vector3.zero;
+        if (this.body.velocity.SetY(0).sqrMagnitude <= EPSILON * EPSILON) {
+            this.body.velocity = this.body.velocity.SetX(0).SetZ(0);
         }
     }
 

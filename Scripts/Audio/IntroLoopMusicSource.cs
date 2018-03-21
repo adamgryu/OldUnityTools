@@ -32,7 +32,6 @@ namespace QuickUnityTools.Audio {
         private int nextAudioSourceIndex;
         private int numberOfLoopsScheduled;
         private Timer loopTimer;
-
         private Timer fadeOutTimer;
 
         private void Start() {
@@ -55,7 +54,7 @@ namespace QuickUnityTools.Audio {
         }
 
         private void OnSceneLoad(Scene scene, LoadSceneMode loadmode) {
-            var timer = this.RegisterTimer(0.5f, () => {
+            this.RegisterTimer(0.5f, () => {
                 GameObject.Destroy(gameObject);
             });
         }
