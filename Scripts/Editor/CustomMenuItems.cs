@@ -101,11 +101,7 @@ public class CustomMenuItems {
     }
 
     public static IEnumerable<GameObject> SceneRoots() {
-        var prop = new HierarchyProperty(HierarchyType.GameObjects);
-        var expanded = new int[0];
-        while (prop.Next(expanded)) {
-            yield return prop.pptrValue as GameObject;
-        }
+        return UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
     }
 
     public static void Collapse(GameObject gameObject, bool collapse = true) {
