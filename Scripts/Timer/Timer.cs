@@ -18,7 +18,7 @@ public class Timer {
     private Action onComplete;
     private bool usesUnscaledTime;
     private bool hasAutoDestroyOwner;
-    private MonoBehaviour autoDestroyOwner;
+    private UnityEngine.Object autoDestroyOwner;
 
     private Timer(float duration, Action onComplete, bool isLooped, bool useUnscaledTime) {
         this.duration = duration;
@@ -39,7 +39,7 @@ public class Timer {
         }
     }
 
-    public void SetAutoDestroyOwner(MonoBehaviour owner) {
+    public void SetAutoDestroyOwner(UnityEngine.Object owner) {
         this.autoDestroyOwner = owner;
         this.hasAutoDestroyOwner = owner != null;
     }
@@ -76,7 +76,7 @@ public class Timer {
         return this.accumulatedTime / this.duration;
     }
 
-    public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useUnscaledTime = false, MonoBehaviour autoCancelObj = null) {
+    public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useUnscaledTime = false, UnityEngine.Object autoCancelObj = null) {
         Timer timer = new Timer(duration, onComplete, isLooped, useUnscaledTime);
         timer.SetAutoDestroyOwner(autoCancelObj);
         TimerServiceLocator.instance.timerManager.AddTimer(timer);

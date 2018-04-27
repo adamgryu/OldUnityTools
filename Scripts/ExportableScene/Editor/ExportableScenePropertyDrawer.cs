@@ -5,26 +5,28 @@ using UnityEditor;
 [CustomPropertyDrawer(typeof(ExportableScene))]
 public class ExportableSceneDrawer : PropertyDrawer {
 
-    private Object sceneObject;
+    private bool verified = false;
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        if (this.sceneObject == null) {
-            this.sceneObject = property.FindPropertyRelative("sceneReference").objectReferenceValue;
-        }
-
         label = EditorGUI.BeginProperty(position, label, property);
         Rect contentPosition = EditorGUI.PrefixLabel(position, label);
-        EditorGUI.PropertyField(contentPosition, property.FindPropertyRelative("sceneReference"), GUIContent.none);        
+
+        var sceneReference = property.FindPropertyRelative("sceneReference");
+        Object lastSceneObj = sceneReference.objectReferenceValue;
+        Object sceneObj = EditorGUI.ObjectField(contentPosition, sceneReference.objectReferenceValue, typeof(SceneAsset), false);
+        sceneReference.objectReferenceValue = sceneObj;
+
         EditorGUI.EndProperty();
 
-        Object obj = property.FindPropertyRelative("sceneReference").objectReferenceValue;
-        if (obj != this.sceneObject) {
-            this.sceneObject = obj;
-            if (obj != null) {
-                Debug.Log("Setting " + obj.name + " to the Exportable Scene!");
-                property.FindPropertyRelative("sceneName").stringValue = obj.name;
-            } else {
-                Debug.Log("Setting the Exportable Scene to NULL!");
+        if (lastSceneObj != sceneObj || !verified) {
+            verified = true;
+
+            // Update the scene name.
+            string name = sceneObj == null ? "" : sceneObj.name;
+            var sceneNameProperty = property.FindPropertyRelative("sceneName");
+            if (sceneNameProperty.stringValue != name) {
+                Debug.Log("Setting the exportable scene from " + sceneNameProperty.stringValue + " to " + name);
+                sceneNameProperty.stringValue = name;
             }
         }
     }
