@@ -15,4 +15,10 @@ public static class Asserts {
             throw new Exception("Assertion failed: " + failureMessage);
         }
     }
+
+    public static void Null(object obj, string failureMessage = "") {
+        if (obj != null) {
+            throw new Exception("Null Assertion failed: " + failureMessage);
+        }
+    }
 }

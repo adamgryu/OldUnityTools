@@ -42,7 +42,7 @@ public abstract class ServiceLocator<TMyType> : Singleton<TMyType> where TMyType
         return service;
     }
 
-    private TService LocateServiceInActiveSceneWithoutErrors<TService>() where TService : ServiceMonoBehaviour {
+    public TService LocateServiceInActiveSceneWithoutErrors<TService>() where TService : ServiceMonoBehaviour {
         // Try and find a cached version of the service.
         Type serviceType = typeof(TService);
         if (cachedSceneServices.ContainsKey(serviceType)) {

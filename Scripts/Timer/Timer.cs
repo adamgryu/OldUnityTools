@@ -69,6 +69,10 @@ public class Timer {
         }
     }
 
+    public float GetTimeRemaining() {
+        return this.IsDone() ? 0 : this.duration - this.accumulatedTime;
+    }
+
     public float GetPercentageComplete() {
         if (this.isCompleted) {
             return 1;
@@ -79,7 +83,9 @@ public class Timer {
     public static Timer Register(float duration, Action onComplete, bool isLooped = false, bool useUnscaledTime = false, UnityEngine.Object autoCancelObj = null) {
         Timer timer = new Timer(duration, onComplete, isLooped, useUnscaledTime);
         timer.SetAutoDestroyOwner(autoCancelObj);
-        TimerServiceLocator.instance.timerManager.AddTimer(timer);
+        if (TimerServiceLocator.instance != null && TimerServiceLocator.instance.timerManager != null) {
+            TimerServiceLocator.instance.timerManager.AddTimer(timer);
+        }
         return timer;
     }
 

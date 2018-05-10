@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 
 [Serializable]
 public class ExportableScene {
