@@ -8,23 +8,32 @@ using System.Text;
 /// Sorts the items by priority, with using time as a tiebreaker.
 /// </summary>
 public class PrioritySortingKey : IComparable {
-    private int priority;
-    private int time;
+    private static int uniqueConsecutiveTimeOrderIds = int.MinValue;
 
-    public PrioritySortingKey(int priority, int time = 0) {
+    private int priority;
+    private int timestamp;
+
+    public PrioritySortingKey(int priority) : this(priority, GetUniqueTime()) { }
+
+    public PrioritySortingKey(int priority, int timestamp) {
         this.priority = priority;
-        this.time = time;
+        this.timestamp = timestamp;
     }
 
     public int CompareTo(object obj) {
         int compare = -1 * this.priority.CompareTo(((PrioritySortingKey)obj).priority);
         if (compare == 0) {
-            return -1 * this.time.CompareTo(((PrioritySortingKey)obj).time);
+            return -1 * this.timestamp.CompareTo(((PrioritySortingKey)obj).timestamp);
         }
         return compare;
     }
 
     public override string ToString() {
-        return "(Priority: " + priority + ", Time: " + time + ")";
+        return "(Priority: " + priority + ", Time: " + timestamp + ")";
+    }
+
+    public static int GetUniqueTime() {
+        uniqueConsecutiveTimeOrderIds++;
+        return uniqueConsecutiveTimeOrderIds;
     }
 }
