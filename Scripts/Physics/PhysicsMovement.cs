@@ -64,9 +64,24 @@ public abstract class PhysicsMovement : MonoBehaviour {
     public GameObject forceApplyPosition;
 
     /// <summary>
+    /// The friction value of the physics material while standing still on the ground.
+    /// </summary>
+    public float standingFriction = 1f;
+
+    /// <summary>
+    /// The friction value while mid-air or moving itself.
+    /// </summary>
+    public float movingFriction = 0f;
+
+    /// <summary>
     /// A cached value of CheckIfGrounded that is updated at the beginning of each update loop.
     /// </summary>
     public bool isGrounded { get; protected set; }
+
+    /// <summary>
+    /// Disables physics material friction entirely.
+    /// </summary>
+    public bool disableFriction { get; set; }
 
     /// <summary>
     /// The direction that points up from the character's head.
@@ -118,6 +133,12 @@ public abstract class PhysicsMovement : MonoBehaviour {
         if (this.body.velocity.SetY(0).sqrMagnitude <= EPSILON * EPSILON) {
             this.body.velocity = this.body.velocity.SetX(0).SetZ(0);
         }
+
+        // Stop sliding on the ground by applying friction sometimes.
+        bool noInput = GetDesiredMovementDirection() * ResolveMaximumVelocity() == Vector3.zero;
+        float friction = (isGrounded && noInput && !disableFriction) ? standingFriction : 0f;
+        myCollider.material.dynamicFriction = friction;
+        myCollider.material.staticFriction = friction;
     }
 
     protected virtual void OnDrawGizmos() {

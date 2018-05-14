@@ -13,6 +13,8 @@ public class TimeScaleController : Singleton<TimeScaleController> {
     private float timeScaleChangeSpeed = TIME_SCALE_CHANGE_SPEED;
     private float initalFixedDeltaTime;
 
+    public float secretSpeedUp = 1; // HACK
+
     void Start() {
         initalFixedDeltaTime = Time.fixedDeltaTime;
     }
@@ -27,16 +29,17 @@ public class TimeScaleController : Singleton<TimeScaleController> {
             Time.fixedDeltaTime = Mathf.LerpUnclamped(0, initalFixedDeltaTime, Time.timeScale);
         } else {
             // Return to normal speed.
-            if (Time.timeScale != normalTimeScale) {
-                Time.timeScale = Mathf.MoveTowards(Time.timeScale, normalTimeScale, timeScaleChangeSpeed * realDeltaTime);
-                if (Time.timeScale == normalTimeScale) {
+            float hack = secretSpeedUp * normalTimeScale;
+            if (Time.timeScale != hack) {
+                Time.timeScale = Mathf.MoveTowards(Time.timeScale, hack, timeScaleChangeSpeed * realDeltaTime);
+                if (Time.timeScale == hack) {
                     // Once back to speed, return the the default change speed.
                     timeScaleChangeSpeed = TIME_SCALE_CHANGE_SPEED;
                 }
             }
 
             // Update the fixed time to match the timescale.
-            float fixedDeltaTime = Mathf.LerpUnclamped(0, initalFixedDeltaTime, Time.timeScale);
+            float fixedDeltaTime = Mathf.Min(initalFixedDeltaTime, Mathf.LerpUnclamped(0, initalFixedDeltaTime, Time.timeScale));
             if (Time.fixedDeltaTime != fixedDeltaTime) {
                 Time.fixedDeltaTime = fixedDeltaTime;
             }
