@@ -37,3 +37,27 @@ public class PrioritySortingKey : IComparable {
         return uniqueConsecutiveTimeOrderIds;
     }
 }
+
+/// <summary>
+/// For use with SortedList where the list represents an ordered stack that manages some global state
+/// that users have to register themselves with to modify.
+/// </summary>
+public class StackResourceSortingKey : PrioritySortingKey {
+
+    private Action<StackResourceSortingKey> releaseResource;
+
+    public StackResourceSortingKey(int priority, Action<StackResourceSortingKey> releaseResource) : base(priority) {
+        Asserts.NotNull(releaseResource);
+        this.releaseResource = releaseResource;
+    }
+
+    public void ReleaseResource() {
+        releaseResource(this);
+    }
+
+    public static void Release(StackResourceSortingKey key) {
+        if (key != null) {
+            key.ReleaseResource();
+        }
+    }
+}

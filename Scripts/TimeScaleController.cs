@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TimeScaleController : Singleton<TimeScaleController> {
 
     private const float TIME_SCALE_CHANGE_SPEED = 1000;
 
-    public float normalTimeScale = 1;
+    public float baseTimeScale { get; set; }
 
     private float slowMoScale;
     private float slowMoDuration;
@@ -13,13 +14,16 @@ public class TimeScaleController : Singleton<TimeScaleController> {
     private float timeScaleChangeSpeed = TIME_SCALE_CHANGE_SPEED;
     private float initalFixedDeltaTime;
 
-    public float secretSpeedUp = 1; // HACK
+    private SortedList<StackResourceSortingKey, float> timeScaleAdjustments = new SortedList<StackResourceSortingKey, float>();
+    private IList<float> timeScaleListCache;
 
-    void Start() {
+    private void Start() {
         initalFixedDeltaTime = Time.fixedDeltaTime;
+        timeScaleListCache = timeScaleAdjustments.Values;
+        baseTimeScale = 1;
     }
 
-    void Update() {
+    private void Update() {
         float realDeltaTime = Time.unscaledDeltaTime;
 
         if (slowMoDuration > 0) {
@@ -29,10 +33,14 @@ public class TimeScaleController : Singleton<TimeScaleController> {
             Time.fixedDeltaTime = Mathf.LerpUnclamped(0, initalFixedDeltaTime, Time.timeScale);
         } else {
             // Return to normal speed.
-            float hack = secretSpeedUp * normalTimeScale;
-            if (Time.timeScale != hack) {
-                Time.timeScale = Mathf.MoveTowards(Time.timeScale, hack, timeScaleChangeSpeed * realDeltaTime);
-                if (Time.timeScale == hack) {
+            float desiredTimeScale = baseTimeScale;
+            if (timeScaleAdjustments.Count > 0) {
+                desiredTimeScale *= timeScaleListCache[0];
+            }
+
+            if (Time.timeScale != desiredTimeScale) {
+                Time.timeScale = Mathf.MoveTowards(Time.timeScale, desiredTimeScale, timeScaleChangeSpeed * realDeltaTime);
+                if (Time.timeScale == desiredTimeScale) {
                     // Once back to speed, return the the default change speed.
                     timeScaleChangeSpeed = TIME_SCALE_CHANGE_SPEED;
                 }
@@ -46,6 +54,18 @@ public class TimeScaleController : Singleton<TimeScaleController> {
         }
     }
 
+    /// <summary>
+    /// Adjusts the timescale. The returned key must be used to unregister the adjustment and return it to normal.
+    /// </summary>
+    public StackResourceSortingKey AdjustTimeScale(float timeScale) {
+        var resourceKey = new StackResourceSortingKey(0, key => timeScaleAdjustments.Remove(key));
+        timeScaleAdjustments.Add(resourceKey, timeScale);
+        return resourceKey;
+    }
+
+    /// <summary>
+    /// Slows down time for a some realtime seconds.
+    /// </summary>
     public void SlowMo(float slowTimeScale, float duration, float? timeChangeSpeed) {
         slowMoScale = slowTimeScale;
         slowMoDuration = duration;
