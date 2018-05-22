@@ -161,7 +161,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
 
         if (this.ResolveCanMove()) {
             Vector3 desiredVelocity = direction * this.ResolveMaximumVelocity();
-            Vector3 currentVelocity = this.GetComponent<Rigidbody>().velocity.SetY(0); // TOOD: Generalize to allow movement along different planes.
+            Vector3 currentVelocity = this.GetComponent<Rigidbody>().velocity.SetY(0); // TODO: Generalize to allow movement along different planes.
             Vector3 diff = desiredVelocity - currentVelocity;
             float force = this.ResolveMovementForce();
             this.body.AddForceAtPosition(diff * force * Time.fixedDeltaTime, this.forceApplyPosition.transform.position);
