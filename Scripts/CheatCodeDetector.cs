@@ -9,11 +9,13 @@ public abstract class CheatCodeDetector : MonoBehaviour {
         private string cheatCode;
         private Action onActivate;
         private int cheatTypeIndex;
+        private CheatCodeDetector controller;
 
-        public Cheat(string cheatCode, Action onActivate) {
+        public Cheat(string cheatCode, Action onActivate, CheatCodeDetector controller) {
             this.cheatCode = cheatCode;
             this.onActivate = onActivate;
             this.cheatTypeIndex = 0;
+            this.controller = controller;
         }
 
         public void Update() {
@@ -22,6 +24,7 @@ public abstract class CheatCodeDetector : MonoBehaviour {
                     this.cheatTypeIndex++;
                     if (this.cheatTypeIndex == this.cheatCode.Length) {
                         this.onActivate();
+                        this.controller.OnCheatActivation();
                         this.cheatTypeIndex = 0;
                     }
                 } else {
@@ -40,6 +43,10 @@ public abstract class CheatCodeDetector : MonoBehaviour {
     }
 
     public void RegisterCheat(string cheatCode, Action onActivate) {
-        this.cheats.Add(new Cheat(cheatCode, onActivate));
+        this.cheats.Add(new Cheat(cheatCode, onActivate, this));
+    }
+
+    protected virtual void OnCheatActivation() {
+        // Triggers on every cheat activation.
     }
 }
