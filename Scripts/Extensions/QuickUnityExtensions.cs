@@ -20,6 +20,13 @@ public static class QuickUnityExtensions {
         return obj2;
     }
 
+    public static GameObject CloneInactive(this GameObject obj) {
+        obj.gameObject.SetActive(false);
+        GameObject obj2 = GameObject.Instantiate<GameObject>(obj);
+        obj.gameObject.SetActive(true);
+        return obj2;
+    }
+
     public static string ColorToHexString(this Color32 color) {
         string hex = "#" + color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
         return hex;
@@ -240,6 +247,19 @@ public static class QuickUnityExtensions {
             list[n] = value;
         }
         return list;
+    }
+
+    public static void Resize<T>(this List<T> list, int size, T element = default(T)) {
+        int count = list.Count;
+
+        if (size < count) {
+            list.RemoveRange(size, count - size);
+        } else if (size > count) {
+            if (size > list.Capacity) {
+                list.Capacity = size; // Optimization.
+            }
+            list.AddRange(Enumerable.Repeat(element, size - count));
+        }
     }
 
     public static T PickRandom<T>(this IList<T> list) {

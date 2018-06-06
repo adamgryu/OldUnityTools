@@ -17,7 +17,7 @@ public class TimeScaleController : Singleton<TimeScaleController> {
     private SortedList<StackResourceSortingKey, float> timeScaleAdjustments = new SortedList<StackResourceSortingKey, float>();
     private IList<float> timeScaleListCache;
 
-    private void Start() {
+    private void Awake() {
         initalFixedDeltaTime = Time.fixedDeltaTime;
         timeScaleListCache = timeScaleAdjustments.Values;
         baseTimeScale = 1;
