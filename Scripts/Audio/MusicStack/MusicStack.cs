@@ -16,7 +16,20 @@ namespace QuickUnityTools.Audio {
     }
 
     /// <summary>
-    /// Manages a stack of songs that should be playing for any given moment.
+    /// Represents a class that can register itself into the music stack. A music stack element can
+    /// define the <see cref="IMusicAsset"/> it wishes to play, the volume that audio should be played
+    /// at, and how the music transitions when the element takes or loses control.
+    /// </summary>
+    public interface IMusicStackElement {
+        MusicStack.IMusicAsset GetMusicAsset();
+        MusicStack.Transition GetTakeControlTransition();
+        MusicStack.Transition GetReleaseControlTransition();
+        float GetDesiredVolume();
+    }
+
+    /// <summary>
+    /// Manages a sorted stack of songs that should be playing for any given moment.
+    /// The element on the top of the stack is the one that should be currently playing.
     /// </summary>
     [ResourceSingleton("MusicStack")]
     public class MusicStack : Singleton<MusicStack> {
@@ -26,19 +39,22 @@ namespace QuickUnityTools.Audio {
 
         // State
         private SortedList<PrioritySortingKey, IMusicStackElement> musicStack = new SortedList<PrioritySortingKey, IMusicStackElement>();
-        private Dictionary<int, MusicStackAudioPlayerController> musicPlayerControllers = new Dictionary<int, MusicStackAudioPlayerController>();
+        private Dictionary<int, MusicPlayerController> playerControllers = new Dictionary<int, MusicPlayerController>();
 
         // Helpers
         private IMusicStackElement currentMusic { get { return musicStackView.Count == 0 ? null : musicStackView[musicStackView.Count - 1]; } }
         private IList<IMusicStackElement> musicStackView;
-        private Dictionary<int, MusicStackAudioPlayerController>.ValueCollection musicControllersView;
+        private Dictionary<int, MusicPlayerController>.ValueCollection musicControllersView;
 
         private void Awake() {
             // Avoid creating garbage.
             musicStackView = musicStack.Values;
-            musicControllersView = musicPlayerControllers.Values;
+            musicControllersView = playerControllers.Values;
         }
 
+        /// <summary>
+        /// Adds an elment to the music stack. If this becomes the top element, it will transition to these music settings.
+        /// </summary>
         public PrioritySortingKey AddToMusicStack(IMusicStackElement addedMusic, MusicStackPriorty priority) {
             var prevMusic = currentMusic;
 
@@ -52,6 +68,9 @@ namespace QuickUnityTools.Audio {
             return newKey;
         }
 
+        /// <summary>
+        /// Removes an element from the music stack. If this was the top element, this will trigger a transition to the next element.
+        /// </summary>
         public void RemoveFromMusicStack(PrioritySortingKey key) {
             Asserts.AssertTrue(musicStack.ContainsKey(key), "This key is not in the music stack!");
             var keyMusic = musicStack[key];
@@ -63,23 +82,33 @@ namespace QuickUnityTools.Audio {
             }
         }
 
-        private void TransitionToMusic(IMusicStackElement oldMusicElement, IMusicStackElement newMusicElement, MusicStackTransition transition) {
-            var oldMusic = GetAudioData(oldMusicElement);
-            var newMusic = GetAudioData(newMusicElement);
-            if (oldMusic != null) {
-                musicPlayerControllers[oldMusic.GetMusicID()].StopMusic(transition.fadeOutTime);
+        /// <summary>
+        /// Transitions from one music configuration to another, using the specified transition.
+        /// 
+        /// MusicStack elements that share the same <see cref="IMusicAsset"/> can reuse the existing audio player
+        /// when transitioning between them. This lets the music keep going.
+        /// </summary>
+        private void TransitionToMusic(IMusicStackElement oldElement, IMusicStackElement newElement, Transition transition) {
+            // We get the music data associated with each stack element.
+            var oldMusicData = GetAudioData(oldElement);
+            var newMusicData = GetAudioData(newElement);
+
+            if (oldMusicData != null) {
+                playerControllers[oldMusicData.GetMusicID()].StopMusic(transition.fadeOutTime);
             }
-            if (newMusic != null) {
-                var id = newMusic.GetMusicID();
-                if (musicPlayerControllers.ContainsKey(id)) {
+
+            if (newMusicData != null) {
+                var id = newMusicData.GetMusicID();
+                if (playerControllers.ContainsKey(id)) {
                     // Reuse an existing player if one exists.
-                    musicPlayerControllers[id].StartMusic(transition.fadeInTime, transition.fadeInDelay, newMusicElement.GetDesiredVolume());
+                    playerControllers[id].StartMusic(transition.fadeInTime, transition.fadeInDelay, newElement.GetDesiredVolume());
                 } else {
-                    var player = newMusic.CreatePlayer();
+                    // Create a new player 
+                    var player = newMusicData.CreatePlayer();
                     player.outputAudioMixerGroup = mixerGroup;
-                    var controller = new MusicStackAudioPlayerController(player);
-                    musicPlayerControllers.Add(id, controller);
-                    controller.StartMusic(transition.fadeInTime, transition.fadeInDelay, newMusicElement.GetDesiredVolume());
+                    var controller = new MusicPlayerController(player);
+                    playerControllers.Add(id, controller);
+                    controller.StartMusic(transition.fadeInTime, transition.fadeInDelay, newElement.GetDesiredVolume());
                 }
             }
         }
@@ -87,29 +116,29 @@ namespace QuickUnityTools.Audio {
         private void Update() {
             bool cleanUp = false;
             foreach (var controller in musicControllersView) {
-                controller.Update();
+                controller.ManualUpdate();
                 cleanUp |= controller.canCleanUp;
             }
             if (cleanUp) {
-                musicPlayerControllers.BufferedForEach(pair => pair.Value.canCleanUp, pair => {
+                playerControllers.BufferedForEach(pair => pair.Value.canCleanUp, pair => {
                     pair.Value.CleanUp();
-                    musicPlayerControllers.Remove(pair.Key);
+                    playerControllers.Remove(pair.Key);
                 });
             }
         }
 
-        private static IMusicStackAudioData GetAudioData(IMusicStackElement element) {
-            return element == null ? null : element.GetAudioData();
+        private static IMusicAsset GetAudioData(IMusicStackElement element) {
+            return element == null ? null : element.GetMusicAsset();
         }
 
         /// <summary>
         /// Provides an API for controling a music player that includes methods for starting, stopping, and fading the music.
         /// </summary>
-        public class MusicStackAudioPlayerController {
+        public class MusicPlayerController {
 
             public bool canCleanUp { get { return !isPlaying && player.volume == 0; } }
 
-            private IMusicStackAudioPlayer player;
+            private IMusicPlayer player;
             private float normalVolume;
 
             private float fadeDelayCountdown;
@@ -118,7 +147,7 @@ namespace QuickUnityTools.Audio {
 
             private bool isPlaying { get { return destinationVolume > 0; } }
 
-            public MusicStackAudioPlayerController(IMusicStackAudioPlayer player) {
+            public MusicPlayerController(IMusicPlayer player) {
                 this.player = player;
                 this.normalVolume = player.volume;
                 player.volume = 0;
@@ -141,7 +170,7 @@ namespace QuickUnityTools.Audio {
                 fadeSpeed = fadeTime > 0 ? Mathf.Abs(destinationVolume - player.volume) / fadeTime : (float?)null;
             }
 
-            public void Update() {
+            public void ManualUpdate() {
                 if (fadeDelayCountdown > 0) {
                     fadeDelayCountdown -= Time.unscaledDeltaTime;
                 } else {
@@ -160,95 +189,46 @@ namespace QuickUnityTools.Audio {
                 player.CleanUp();
             }
         }
-    }
 
-    /// <summary>
-    /// Defines how the current music ends and the new music starts.
-    /// </summary>
-    [Serializable]
-    public struct MusicStackTransition {
-        public float fadeOutTime;
-        public float fadeInTime;
-        public float fadeInDelay;
+        /// <summary>
+        /// Represents a Unity music asset that can be played and has a unqiue ID.
+        /// </summary>
+        public interface IMusicAsset {
 
-        public readonly static MusicStackTransition INSTANT = new MusicStackTransition() { };
-        public readonly static MusicStackTransition CROSS_FADE = new MusicStackTransition() { fadeOutTime = 2f, fadeInTime = 2 };
-    }
+            /// <summary>
+            /// Creates a Unity object that will play this music asset.
+            /// </summary>
+            IMusicPlayer CreatePlayer();
 
-    /// <summary>
-    /// Represents 
-    /// </summary>
-    public interface IMusicStackAudioData {
-        IMusicStackAudioPlayer CreatePlayer();
-        int GetMusicID();
-    }
-
-    public interface IMusicStackElement {
-        IMusicStackAudioData GetAudioData();
-        float GetDesiredVolume();
-        MusicStackTransition GetTakeControlTransition();
-        MusicStackTransition GetReleaseControlTransition();
-    }
-
-    public class AudioClipMusicStackAudioData : IMusicStackAudioData {
-
-        private AudioClip clip;
-
-        public AudioClipMusicStackAudioData(AudioClip clip) {
-            this.clip = clip;
+            /// <summary>
+            /// Returns the unique music ID that the music stack uses to detect if two stack elements are playing the same music.
+            /// </summary>
+            int GetMusicID();
         }
 
-        public int GetMusicID() {
-            return clip.GetInstanceID();
+        /// <summary>
+        /// Represents a Unity object that plays an associated <see cref="IMusicAsset"/>.
+        /// </summary>
+        public interface IMusicPlayer {
+            AudioMixerGroup outputAudioMixerGroup { set; }
+            float volume { get; set; }
+            bool isPlaying { get; }
+            void Play();
+            void Stop();
+            void CleanUp();
         }
 
-        public IMusicStackAudioPlayer CreatePlayer() {
-            return new AudioClipMusicStackAudioPlayer(clip);
+        /// <summary>
+        /// Defines how the current music ends and the new music starts.
+        /// </summary>
+        [Serializable]
+        public struct Transition {
+            public float fadeOutTime;
+            public float fadeInTime;
+            public float fadeInDelay;
+
+            public readonly static Transition INSTANT = new Transition() { };
+            public readonly static Transition CROSS_FADE = new Transition() { fadeOutTime = 2f, fadeInTime = 2 };
         }
-
-        public class AudioClipMusicStackAudioPlayer : IMusicStackAudioPlayer {
-
-            private AudioSource source;
-
-            public AudioClipMusicStackAudioPlayer(AudioClip clip) {
-                GameObject obj = new GameObject("AudioSourceMusicStackAudioPlayer: " + clip);
-                AudioSource source = obj.AddComponent<AudioSource>();
-                source.clip = clip;
-                this.source = source;
-                UnityEngine.Object.DontDestroyOnLoad(obj);
-            }
-
-            public float volume {
-                get { return source.volume; }
-                set { source.volume = value; }
-            }
-
-            public bool isPlaying { get { return source.isPlaying; } }
-
-            public AudioMixerGroup outputAudioMixerGroup {
-                set { source.outputAudioMixerGroup = value; }
-            }
-
-            public void CleanUp() {
-                GameObject.Destroy(source.gameObject);
-            }
-
-            public void Play() {
-                source.Play();
-            }
-
-            public void Stop() {
-                source.Stop();
-            }
-        }
-    }
-
-    public interface IMusicStackAudioPlayer {
-        AudioMixerGroup outputAudioMixerGroup { set; }
-        float volume { get; set; }
-        bool isPlaying { get; }
-        void Play();
-        void Stop();
-        void CleanUp();
     }
 }

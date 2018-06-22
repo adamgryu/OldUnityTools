@@ -5,13 +5,17 @@ using System;
 
 namespace QuickUnityTools.Audio {
 
+    /// <summary>
+    /// Music that plays in the background of the scene. It is added to the MusicStack for the
+    /// scene's lifetime.
+    /// </summary>
     public class SceneBackgroundMusic : MonoBehaviour, IMusicStackElement {
 
         public AudioClip music;
 
         public MusicStackPriorty priority = MusicStackPriorty.Low;
-        public MusicStackTransition transitionIn = MusicStackTransition.CROSS_FADE;
-        public MusicStackTransition transitionOut = MusicStackTransition.CROSS_FADE;
+        public MusicStack.Transition transitionIn = MusicStack.Transition.CROSS_FADE;
+        public MusicStack.Transition transitionOut = MusicStack.Transition.CROSS_FADE;
         public float desiredVolume = 1;
 
         private PrioritySortingKey musicStackKey;
@@ -24,15 +28,15 @@ namespace QuickUnityTools.Audio {
             MusicStack.instance.RemoveFromMusicStack(musicStackKey);
         }
 
-        public IMusicStackAudioData GetAudioData() {
-            return new AudioClipMusicStackAudioData(music);
+        public MusicStack.IMusicAsset GetMusicAsset() {
+            return new AudioClipMusicAsset(music);
         }
 
-        public MusicStackTransition GetReleaseControlTransition() {
+        public MusicStack.Transition GetReleaseControlTransition() {
             return transitionOut;
         }
 
-        public MusicStackTransition GetTakeControlTransition() {
+        public MusicStack.Transition GetTakeControlTransition() {
             return transitionIn;
         }
 
