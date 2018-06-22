@@ -6,11 +6,15 @@ using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 namespace QuickUnityTools.Audio {
-    public class IntroLoopMusicSource : MonoBehaviour {
+
+    /// <summary>
+    /// A special audio source that allows an audio clip to smoothly loop from some point other than the beginning of the song.
+    /// </summary>
+    public class SmoothLoopAudioSource : MonoBehaviour {
 
         private const int SECONDS_IN_MINUTE = 60;
 
-        public MusicData music;
+        public SmoothLoopAudioClip music;
         public AudioMixerGroup mixerGroup;
 
         private float volume {
@@ -32,7 +36,6 @@ namespace QuickUnityTools.Audio {
         private int nextAudioSourceIndex;
         private int numberOfLoopsScheduled;
         private Timer loopTimer;
-        private Timer fadeOutTimer;
 
         private void Start() {
             audioSources = new AudioSource[2];
@@ -43,26 +46,6 @@ namespace QuickUnityTools.Audio {
                 audioSources[i].volume = volume;
             }
             Play();
-
-            // HACK: For a dirty and cheap way to implement fade out.
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoad;
-        }
-
-        private void OnDestroy() {
-            SceneManager.sceneLoaded -= OnSceneLoad;
-        }
-
-        private void OnSceneLoad(Scene scene, LoadSceneMode loadmode) {
-            this.RegisterTimer(0.5f, () => {
-                GameObject.Destroy(gameObject);
-            });
-        }
-
-        private void Update() {
-            if (fadeOutTimer != null) {
-                volume = fadeOutTimer.GetPercentageComplete();
-            }
         }
 
         public void Play() {

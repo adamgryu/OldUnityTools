@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Audio;
+using System;
 
 namespace QuickUnityTools.Audio {
 
@@ -15,18 +16,10 @@ namespace QuickUnityTools.Audio {
 
         private Dictionary<string, AudioClip> loadedSounds = new Dictionary<string, AudioClip>();
 
-        public AudioSource PlayVaried(string soundName, float spread = 0.3f) {
-            return this.PlayVaried(this.LookUpAudioClip(soundName), spread);
-        }
-
         public AudioSource PlayVaried(AudioClip soundName, float spread = 0.3f) {
             AudioSource source = this.Play(soundName);
             source.pitch += UnityEngine.Random.Range(-spread / 2, spread / 2);
             return source;
-        }
-
-        public AudioSource Play(string soundName) {
-            return this.Play(this.LookUpAudioClip(soundName));
         }
 
         public AudioSource Play(AudioClip clip, float volume = 1) {
@@ -42,21 +35,6 @@ namespace QuickUnityTools.Audio {
             source.loop = true;
             source.Play();
             return source;
-        }
-
-        public AudioClip LookUpAudioClip(string soundName) {
-            if (loadedSounds.ContainsKey(soundName)) {
-                return this.loadedSounds[soundName];
-            } else {
-                AudioClip clip = Resources.Load<AudioClip>(soundName);
-                if (clip == null) {
-                    Debug.LogWarning("Tried to play sound from string, but failed: " + soundName);
-                    return null;
-                } else {
-                    this.loadedSounds.Add(soundName, clip);
-                    return clip;
-                }
-            }
         }
 
         private AudioSource PlayOneOff(AudioClip clip, Vector3 position, float volume = 1, float spatialBlend = 0) {
@@ -86,6 +64,35 @@ namespace QuickUnityTools.Audio {
             AudioSource audioSource = soundGameObject.AddComponent<AudioSource>();
             audioSource.clip = clip;
             return audioSource;
+        }
+
+        [Obsolete]
+        public AudioSource Play(string soundName) {
+            return this.Play(this.LookUpAudioClip(soundName));
+        }
+
+        [Obsolete]
+        public AudioSource PlayVaried(string soundName, float spread = 0.3f) {
+            return this.PlayVaried(this.LookUpAudioClip(soundName), spread);
+        }
+
+        /// <summary>
+        /// Looks up an audio clip and loads it into memory.
+        /// Currently, there's no way of unloading this clip in the API.
+        /// </summary>
+        private AudioClip LookUpAudioClip(string soundName) {
+            if (loadedSounds.ContainsKey(soundName)) {
+                return this.loadedSounds[soundName];
+            } else {
+                AudioClip clip = Resources.Load<AudioClip>(soundName);
+                if (clip == null) {
+                    Debug.LogWarning("Tried to play sound from string, but failed: " + soundName);
+                    return null;
+                } else {
+                    this.loadedSounds.Add(soundName, clip);
+                    return clip;
+                }
+            }
         }
     }
 

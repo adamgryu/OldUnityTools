@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 
 namespace QuickUnityTools.Audio {
     public class AmbientSounds : ServiceMonoBehaviour {
@@ -18,22 +19,42 @@ namespace QuickUnityTools.Audio {
         public AmbientSound[] soundsInScene;
         public AudioMixerGroup mixerGroup;
 
-        protected override void OnEnable() {
-            var manager = AmbientSoundManager.instance;
-            manager.mixerGroup = mixerGroup;
-            manager.UpdateSounds(soundsInScene);
+        private void Awake() {
+            AmbientSoundManager.instance.Initalize(this);
         }
 
-        public void UpdateSounds(AmbientSound[] sounds) {
+        public void SetSounds(AmbientSound[] sounds) {
+            soundsInScene = sounds;
             AmbientSoundManager.instance.UpdateSounds(sounds);
         }
 
-        private class AmbientSoundManager : Singleton<AmbientSoundManager> {
-            public AudioMixerGroup mixerGroup;
-            public float fadeTime = 1f;
-
+        private class AmbientSoundManager : Singleton<AmbientSoundManager> { 
+            private AudioMixerGroup mixerGroup;
+            private float fadeTime = 1f;
             private Dictionary<AudioClip, AudioSource> playingSounds = new Dictionary<AudioClip, AudioSource>();
             private List<Coroutine> soundFades = new List<Coroutine>();
+            private bool initalized = false;
+
+            public void Initalize(AmbientSounds soundGroup) {
+                if (!initalized) {
+                    mixerGroup = soundGroup.mixerGroup;
+                    UpdateSounds(soundGroup.soundsInScene);
+                    initalized = true;
+                }
+            }
+
+            private void Awake() {
+                SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            }
+
+            private void OnActiveSceneChanged(Scene oldScene, Scene newScene) {
+                var soundGroups = GameObject.FindObjectsOfType<AmbientSounds>();
+                if (soundGroups.Length > 1) {
+                    Debug.LogWarning("Duplicate ambient sounds in this scene! There should only be one.");
+                }
+                var sounds = soundGroups.FirstOrDefault();
+                UpdateSounds(sounds != null ? sounds.soundsInScene : new AmbientSound[0]);
+            }
 
             public void UpdateSounds(AmbientSound[] newSounds) {
                 CancelPreviousFades();

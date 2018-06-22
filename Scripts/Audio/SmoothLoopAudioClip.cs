@@ -7,7 +7,7 @@ namespace QuickUnityTools.Audio {
     /// An audio clip and metadata required for smooth looping.
     /// </summary>
     [CreateAssetMenu]
-    public class MusicData : ScriptableObject {
+    public class SmoothLoopAudioClip : ScriptableObject {
         public AudioClip clip;
         public float introMeasures = 1;
         public float beatsPerMeasure = 4;

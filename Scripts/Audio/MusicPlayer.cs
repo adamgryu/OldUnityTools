@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.Audio;
+using System;
 
 namespace QuickUnityTools.Audio {
     /// <summary>
     /// A class for managing the currently playing song.
     /// </summary>
     [ResourceSingleton("MusicPlayer")]
+    [Obsolete("The MusicPlayerStack is the newer version of this class.")]
     public class MusicPlayer : Singleton<MusicPlayer> {
 
         public AudioSource currentAudio { get; private set; }
