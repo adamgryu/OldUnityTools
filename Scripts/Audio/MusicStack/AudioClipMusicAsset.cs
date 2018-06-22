@@ -34,6 +34,7 @@ namespace QuickUnityTools.Audio {
                 GameObject obj = new GameObject("AudioClipMusicPlayer (" + clip + ")");
                 AudioSource source = obj.AddComponent<AudioSource>();
                 source.clip = clip;
+                source.loop = true;
                 this.source = source;
                 UnityEngine.Object.DontDestroyOnLoad(obj);
             }

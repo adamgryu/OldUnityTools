@@ -25,6 +25,7 @@ namespace QuickUnityTools.Audio {
         MusicStack.Transition GetTakeControlTransition();
         MusicStack.Transition GetReleaseControlTransition();
         float GetDesiredVolume();
+        MusicStackPriorty GetPriority();
     }
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace QuickUnityTools.Audio {
         private Dictionary<int, MusicPlayerController> playerControllers = new Dictionary<int, MusicPlayerController>();
 
         // Helpers
-        private IMusicStackElement currentMusic { get { return musicStackView.Count == 0 ? null : musicStackView[musicStackView.Count - 1]; } }
+        private IMusicStackElement currentMusic { get { return musicStackView.Count == 0 ? null : musicStackView[0]; } }
         private IList<IMusicStackElement> musicStackView;
         private Dictionary<int, MusicPlayerController>.ValueCollection musicControllersView;
 
@@ -55,10 +56,10 @@ namespace QuickUnityTools.Audio {
         /// <summary>
         /// Adds an elment to the music stack. If this becomes the top element, it will transition to these music settings.
         /// </summary>
-        public PrioritySortingKey AddToMusicStack(IMusicStackElement addedMusic, MusicStackPriorty priority) {
+        public PrioritySortingKey AddToMusicStack(IMusicStackElement addedMusic) {
             var prevMusic = currentMusic;
 
-            var newKey = new PrioritySortingKey((int)priority);
+            var newKey = new PrioritySortingKey((int)addedMusic.GetPriority());
             musicStack.Add(newKey, addedMusic);
 
             if (currentMusic != prevMusic) {
@@ -229,6 +230,7 @@ namespace QuickUnityTools.Audio {
 
             public readonly static Transition INSTANT = new Transition() { };
             public readonly static Transition CROSS_FADE = new Transition() { fadeOutTime = 2f, fadeInTime = 2 };
+            public static readonly Transition QUICK_OUT = new Transition() { fadeOutTime = 0.1f, fadeInDelay = 0.5f };
         }
     }
 }
