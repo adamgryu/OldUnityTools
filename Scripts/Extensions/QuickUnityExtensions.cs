@@ -127,6 +127,16 @@ public static class QuickUnityExtensions {
         }
     }
 
+    public static bool IsPointWithin(this Collider collider, Vector3 point) {
+        if (!collider.bounds.Contains(point)) {
+            return false;
+        }
+
+        Vector3 towardCenter = collider.bounds.center - point;
+        RaycastHit hit;
+        return !collider.Raycast(new Ray(point, towardCenter), out hit, towardCenter.magnitude);
+    }
+
     public static IEnumerable<T> Yield<T>(this T item) {
         yield return item;
     }

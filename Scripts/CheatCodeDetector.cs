@@ -23,9 +23,9 @@ public abstract class CheatCodeDetector : MonoBehaviour {
                 if (Input.inputString[0] == this.cheatCode[this.cheatTypeIndex]) {
                     this.cheatTypeIndex++;
                     if (this.cheatTypeIndex == this.cheatCode.Length) {
+                        this.cheatTypeIndex = 0;
                         this.onActivate();
                         this.controller.OnCheatActivation();
-                        this.cheatTypeIndex = 0;
                     }
                 } else {
                     this.cheatTypeIndex = 0;
