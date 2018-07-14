@@ -67,6 +67,23 @@ public class NavigatorMovement : PhysicsMovement {
 		this.goal = goal;
 	}
 
+    public void SetGoalImmediately(Vector3 goal) {
+        SetGoal(goal);
+        RecalculatePath();
+    }
+
+    public float GetDistanceToGoal() {
+        if (!hasValidPath) {
+            return 0;
+        }
+
+        float distance = (transform.position - destinationNode).magnitude;
+        for (int i = pathNode; i < currentPath.corners.Length - 1; i++) {
+            distance += (currentPath.corners[i + 1] - currentPath.corners[i]).magnitude;
+        }
+        return distance;
+    }
+
 	private void SelectNextNode() {
 		this.pathNode++;
 		if (this.pathNode >= this.currentPath.corners.Length) {
