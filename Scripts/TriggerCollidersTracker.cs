@@ -40,9 +40,7 @@ public abstract class TriggerCollidersTracker<T> : MonoBehaviour {
     private void MarkColliderRemoved(Collider collider) {
         if (this.collidingColliders.Contains(collider)) {
             this.collidingColliders.Remove(collider);
-            if (collider != null) {
-                this.OnColliderExit(collider);
-            }
+            this.OnColliderExit(collider);
             if (this.collidingColliders.Count == 0) {
                 this.OnNoColliders();
             }
