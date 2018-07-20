@@ -14,6 +14,7 @@ namespace QuickUnityTools.Audio {
             public AudioClip clip;
             public float volume = 1;
             public bool fadeIn = true;
+            public AudioSource existingSource;
         }
 
         public AmbientSound[] soundsInScene;
@@ -62,7 +63,7 @@ namespace QuickUnityTools.Audio {
                 // Create sources or update sources for the sounds in the new set.
                 foreach (AmbientSound sound in newSounds) {
                     if (!playingSounds.ContainsKey(sound.clip)) {
-                        var newSource = new GameObject(sound.clip.name).AddComponent<AudioSource>();
+                        var newSource = sound.existingSource != null ? sound.existingSource : new GameObject(sound.clip.name).AddComponent<AudioSource>();
                         newSource.transform.parent = this.transform;
                         newSource.clip = sound.clip;
                         newSource.volume = sound.fadeIn ? 0 : sound.volume;
