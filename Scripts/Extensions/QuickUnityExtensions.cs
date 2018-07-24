@@ -149,6 +149,10 @@ public static class QuickUnityExtensions {
         return mask == (mask | (1 << layer));
     }
 
+    public static IEnumerator WrapAsEnumerator(this YieldInstruction yieldInstruction) {
+        yield return yieldInstruction;
+    }
+
     #region Collections
 
     public static void IndexedForEach<T>(this IEnumerable<T> collection, Action<T, int> action) {
