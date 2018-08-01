@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Linq;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [Serializable]
 public class ExportableScene {
@@ -18,6 +23,12 @@ public class ExportableScene {
         if (sceneName != name) {
             Debug.LogWarning("Click here to go to the object and fix outdated ExportableScene reference for " + dirtyTarget.gameObject.name, dirtyTarget);
         }
+
+#if UNITY_EDITOR
+        if (!EditorBuildSettings.scenes.Any(s => s.path == AssetDatabase.GetAssetPath(sceneReference))) {
+            Debug.LogWarning("The referenced scene is not included in the build settings!");
+        }
+#endif
     }
 
     public string GetSceneName() {

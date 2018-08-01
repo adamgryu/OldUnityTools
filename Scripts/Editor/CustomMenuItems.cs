@@ -16,7 +16,7 @@ public class CustomMenuItems {
         Selection.objects = newSelection;
     }
 
-    [MenuItem("GameObject/Hierarchy/Collapse All &q", false, -10)]
+    [MenuItem("GameObject/Hierarchy/Collapse All [Alt + Q] &q", false, -10)]
     private static void CollapseAll() {
         foreach (GameObject obj in SceneRoots()) {
             SetExpandedRecursive(obj, false);
@@ -39,24 +39,71 @@ public class CustomMenuItems {
 
         GameObject container = new GameObject("GameObject");
 
+        foreach(var gameObj in GetRootSelectedGameObjects()) {
+            gameObj.transform.parent = container.transform;
+        }
+
+        Selection.objects = new Object[] { };
+        CollapseAll();
+    }
+
+    private static IEnumerable<GameObject> GetRootSelectedGameObjects() {
         foreach (GameObject obj in Selection.gameObjects) {
+            // Search up through the objects parents.
+            bool isChild = false;
             Transform nextParent = obj.transform.parent;
-            bool dontMove = false;
             while (nextParent != null) {
                 if (Selection.gameObjects.Any(o => o.gameObject == nextParent.gameObject)) {
-                    dontMove = true;
+                    isChild = true;
                     break;
                 }
                 nextParent = nextParent.transform.parent;
             }
 
-            if (!dontMove) {
-                obj.transform.parent = container.transform;
+            if (!isChild) {
+                yield return obj;
             }
         }
+    }
 
-        Selection.objects = new Object[] { };
-        CollapseAll();
+    [MenuItem("GameObject/Organize/Decor", false, -5)]
+    private static void PlaceInDecor() {
+        PlaceInObject("Decor");
+    }
+
+    [MenuItem("GameObject/Organize/Background", false, -5)]
+    private static void PlaceInBackground() {
+        PlaceInObject("Background");
+    }
+
+    [MenuItem("GameObject/Organize/Buildings", false, -5)]
+    private static void PlaceInBuildings() {
+        PlaceInObject("Buildings");
+    }
+
+    [MenuItem("GameObject/Organize/Structures", false, -5)]
+    private static void PlaceInStructures() {
+        PlaceInObject("Structures");
+    }
+
+    [MenuItem("GameObject/Organize/LevelObjects", false, -5)]
+    private static void PlaceInLevelObjects() {
+        PlaceInObject("LevelObjects");
+    }
+
+    private static void PlaceInObject(string name) {
+        if (Selection.gameObjects.Length <= 0) {
+            return;
+        }
+        var gameObj = GameObject.Find(name);
+        if (!gameObj) {
+            gameObj = new GameObject(name);
+            return;
+        }
+
+        foreach (GameObject obj in Selection.gameObjects) {
+            obj.transform.parent = gameObj.transform;
+        }
     }
 
     #region CodeFromWeb

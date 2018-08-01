@@ -81,15 +81,19 @@ public class InspectorNavigator : EditorWindow {
         openedInstance = null;
     }
 
-    private void OnGUI() {
+    protected virtual void OnGUI() {
         GUILayout.BeginHorizontal();
+        DrawGUIToolbar();
+        GUILayout.EndHorizontal();
+    }
+
+    protected virtual void DrawGUIToolbar() {
         if (GUILayout.Button("◄")) {
             Back();
         }
         if (GUILayout.Button("►")) {
             Forward();
         }
-        GUILayout.EndHorizontal();
     }
 
     private void Forward() {
