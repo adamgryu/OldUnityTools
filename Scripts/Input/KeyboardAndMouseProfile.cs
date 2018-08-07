@@ -60,7 +60,12 @@ using InControl;
 					// KeyCodeComboButton requires that all KeyCode params are down simultaneously.
 					Source = KeyCodeComboButton( KeyCode.LeftAlt, KeyCode.Alpha1 )
 				},
-			};
+                new InputControlMapping {
+                    Handle = "CTRL",
+                    Target = InputControlType.LeftTrigger,
+                    Source = KeyCodeButton( KeyCode.LeftControl )
+                },
+            };
 
 			AnalogMappings = new[]
 			{
@@ -88,7 +93,7 @@ using InControl;
 					Target = InputControlType.LeftStickY,
 					Source = KeyCodeAxis( KeyCode.DownArrow, KeyCode.UpArrow )
 				},
-				new InputControlMapping
+                new InputControlMapping
 				{
 					Handle = "Look X",
 					Target = InputControlType.RightStickX,

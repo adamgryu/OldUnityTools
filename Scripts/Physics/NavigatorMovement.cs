@@ -6,17 +6,16 @@ public class NavigatorMovement : PhysicsMovement {
 
 	public float successDistance = 0.7f;
     public bool enableMovement = true;
+    public RandomRange repathTimeout = new RandomRange(0.25f, 1f);
 
     public bool hasGoal { get { return this.goal.HasValue; } }
     public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid; } }
     public Vector3 destinationNode { get { return this.currentPath.corners[pathNode]; } }
+    public Vector3? goal { get; private set; }
 
     protected UnityEngine.AI.NavMeshPath currentPath { get; private set; }
 	protected int pathNode { get; private set; }
-
-    private Vector3? goal = null;
     private float recalculateTimer = 0.1f;
-
 
 	protected override void Update() {
 		base.Update();
@@ -63,10 +62,16 @@ public class NavigatorMovement : PhysicsMovement {
 		}
 	}
 
+    /// <summary>
+    /// Paths to the given goal on the goal update event.
+    /// </summary>
 	public void SetGoal(Vector3? goal) {
 		this.goal = goal;
 	}
 
+    /// <summary>
+    /// Paths to the given goal and immediately repaths.
+    /// </summary>
     public void SetGoalImmediately(Vector3 goal) {
         SetGoal(goal);
         RecalculatePath();
@@ -115,6 +120,7 @@ public class NavigatorMovement : PhysicsMovement {
 	}
 
 	protected virtual float ResolveRecalculationTime() {
-		return Random.Range(0.1f, 0.5f);
-	}
+        return repathTimeout.Random();
+
+    }
 }

@@ -95,4 +95,14 @@ public class Timer {
         }
     }
 
+    public static void FinishImmediately(Timer timer) {
+        if (timer == null) {
+            return;
+        }
+        if (timer.IsDone()) {
+            return;
+        }
+        timer.onComplete();
+        timer.isCompleted = true;
+    }
 }
