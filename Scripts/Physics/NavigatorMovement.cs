@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.AI;
+using System;
 
 /// <summary>
 /// A physics movement rigidbody that follows the nav mesh.
@@ -35,6 +36,8 @@ public class NavMeshNavigator : MonoBehaviour {
     public bool hasValidPath { get { return this.currentPath != null && this.currentPath.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid; } }
     public Vector3 destinationNode { get { return this.currentPath.corners[pathNode]; } }
     public Vector3? goal { get; private set; }
+    public event Action onGoalReached;
+    public event Action onBeforeCalculationTimeout;
 
     protected NavMeshPath currentPath { get; private set; }
     protected int pathNode { get; private set; }
@@ -61,12 +64,18 @@ public class NavMeshNavigator : MonoBehaviour {
                     }
                 } else if ((this.goal.Value - this.transform.position).SetY(0).magnitude < this.successDistance) {
                     this.ClearGoal();
+                    if (onGoalReached != null) {
+                        onGoalReached();
+                    }
                 }
             }
         }
     }
 
     protected virtual void OnCalculationTimeout() {
+        if (onBeforeCalculationTimeout != null) {
+            onBeforeCalculationTimeout();
+        }
         if (this.hasGoal) {
             this.RecalculatePath();
         }
