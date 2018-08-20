@@ -27,21 +27,21 @@ namespace InControl
 			AddControl( InputControlType.RightStickX, "RightStickX" );
 			AddControl( InputControlType.RightStickY, "RightStickY" );
 
-			AddControl( InputControlType.LeftTrigger, "LeftTrigger" );
-			AddControl( InputControlType.RightTrigger, "RightTrigger" );
+			AddControl( InputControlType.LeftTrigger, "LT" );
+			AddControl( InputControlType.RightTrigger, "RT" );
 
 			AddControl( InputControlType.DPadUp, "DPadUp" );
 			AddControl( InputControlType.DPadDown, "DPadDown" );
 			AddControl( InputControlType.DPadLeft, "DPadLeft" );
 			AddControl( InputControlType.DPadRight, "DPadRight" );
 
-			AddControl( InputControlType.Action1, "Action1" );
-			AddControl( InputControlType.Action2, "Action2" );
-			AddControl( InputControlType.Action3, "Action3" );
-			AddControl( InputControlType.Action4, "Action4" );
+			AddControl( InputControlType.Action1, "A" );
+			AddControl( InputControlType.Action2, "B" );
+			AddControl( InputControlType.Action3, "X" );
+			AddControl( InputControlType.Action4, "Y" );
 
-			AddControl( InputControlType.LeftBumper, "LeftBumper" );
-			AddControl( InputControlType.RightBumper, "RightBumper" );
+			AddControl( InputControlType.LeftBumper, "LB" );
+			AddControl( InputControlType.RightBumper, "RB" );
 
 			AddControl( InputControlType.LeftStickButton, "LeftStickButton" );
 			AddControl( InputControlType.RightStickButton, "RightStickButton" );

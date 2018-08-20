@@ -42,7 +42,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logDebugInfo: 0
   invertYAxis: 0
-  enableXInput: 0
+  enableXInput: 1
   useFixedUpdate: 0
   dontDestroyOnLoad: 1
   customProfiles:

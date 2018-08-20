@@ -96,6 +96,47 @@ namespace QuickUnityTools.Audio {
         }
     }
 
+    public static class Volume {
+
+        public enum Channel {
+            Master,
+            Music,
+            Ambience,
+            SoundEffects,
+        }
+
+        private static float GetDefaultChannelDB(Channel channel) {
+            switch (channel) {
+                case Channel.Master: return -6;
+                case Channel.Music: return -5;
+            }
+            return 0;
+        }
+
+        public static void SetVolume(Channel channel, float percent) {
+            float normal = GetDefaultChannelDB(channel);
+            SetVolume(channel.ToString() + "Volume", percent, normal);
+        }
+
+        private static void SetVolume(string parameter, float percent, float normal) {
+            float a = (-80 - normal) / Mathf.Log(0.01f);
+            float db = a * Mathf.Log(Mathf.Max(0.01f, percent)) + normal;
+            SoundPlayer.instance.soundMixerGroup.audioMixer.SetFloat(parameter, db);
+        }
+
+        public static float GetVolume(Channel channel) {
+            string parameter = channel.ToString() + "Volume";
+
+            float db;
+            SoundPlayer.instance.soundMixerGroup.audioMixer.GetFloat(parameter, out db);
+
+            float normal = GetDefaultChannelDB(channel);
+            float a = (-80 - normal) / Mathf.Log(0.01f);
+            float percent = Mathf.Exp((db - normal) / a);
+            return percent;
+        }
+    }
+
     public static class SoundPlayerExtensions {
         public static AudioSource Play(this AudioClip clip) {
             return SoundPlayer.instance.Play(clip);

@@ -46,7 +46,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// <summary>
     /// The size of the sphere-cast that is shot to determine if it is grounded.
     /// </summary>
-    public float midairRayRadius = 0.5f;
+    public float midairRayRadius = 0.25f;
 
     /// <summary>
     /// The speed at which the object turns to face its direction.
@@ -135,7 +135,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
         }
 
         // Stop sliding on the ground by applying friction sometimes.
-        bool noInput = GetDesiredMovementDirection() * ResolveMaximumVelocity() == Vector3.zero;
+        bool noInput = GetDesiredMovementVector() * ResolveMaximumVelocity() == Vector3.zero;
         float friction = (isGrounded && noInput && !disableFriction) ? standingFriction : 0f;
         myCollider.material.dynamicFriction = friction;
         myCollider.material.staticFriction = friction;
@@ -157,7 +157,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
 
     protected virtual void UpdateMovement() {
         this.isGrounded = this.CheckIfGrounded();
-        Vector3 direction = this.GetDesiredMovementDirection();
+        Vector3 direction = this.GetDesiredMovementVector();
 
         if (this.ResolveCanMove()) {
             Vector3 desiredVelocity = direction * this.ResolveMaximumVelocity();
@@ -185,10 +185,10 @@ public abstract class PhysicsMovement : MonoBehaviour {
 
     #region OverrideBehaviour
 
-    public abstract Vector3 GetDesiredMovementDirection();
+    public abstract Vector3 GetDesiredMovementVector();
 
     protected virtual Vector3 GetDesiredRotateDirection() {
-        return this.GetDesiredMovementDirection();
+        return this.GetDesiredMovementVector();
     }
 
     protected virtual bool ResolveCanRotate() {
