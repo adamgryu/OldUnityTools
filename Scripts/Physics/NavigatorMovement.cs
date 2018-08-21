@@ -63,10 +63,7 @@ public class NavMeshNavigator : MonoBehaviour {
                         this.SelectNextNode();
                     }
                 } else if ((this.goal.Value - this.transform.position).SetY(0).magnitude < this.successDistance) {
-                    this.ClearGoal();
-                    if (onGoalReached != null) {
-                        onGoalReached();
-                    }
+                    this.ReachGoal();
                 }
             }
         }
@@ -111,6 +108,13 @@ public class NavMeshNavigator : MonoBehaviour {
         this.currentPath = null;
     }
 
+    private void ReachGoal() {
+        ClearGoal();
+        if (onGoalReached != null) {
+            onGoalReached();
+        }
+    }
+
     public float GetDistanceToGoal() {
         if (!hasValidPath) {
             return 0;
@@ -126,7 +130,7 @@ public class NavMeshNavigator : MonoBehaviour {
     private void SelectNextNode() {
         this.pathNode++;
         if (this.pathNode >= this.currentPath.corners.Length) {
-            this.ClearGoal();
+            this.ReachGoal();
         }
     }
 
