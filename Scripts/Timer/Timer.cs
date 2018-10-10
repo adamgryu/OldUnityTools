@@ -73,6 +73,10 @@ public class Timer {
         return this.IsDone() ? 0 : this.duration - this.accumulatedTime;
     }
 
+    public float GetTime() {
+        return this.accumulatedTime;
+    }
+
     public float GetPercentageComplete() {
         if (this.isCompleted) {
             return 1;

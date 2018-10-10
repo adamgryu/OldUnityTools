@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 public abstract class TriggerCollidersTracker<T> : MonoBehaviour {
 
-    public int objectsInsideCount { get { return this.collidingColliders.Count; } }
-    protected List<Collider> collidingColliders;
+    public int objectsInsideCount { get { return this.collidersInside.Count; } }
+    protected List<Collider> collidersInside;
 
     protected virtual void Start() {
-        this.collidingColliders = new List<Collider>();
+        this.collidersInside = new List<Collider>();
     }
 
     protected virtual void Update() {
-        for (int i = collidingColliders.Count - 1; i >= 0; i--) {
-            var collider = collidingColliders[i];
+        for (int i = collidersInside.Count - 1; i >= 0; i--) {
+            var collider = collidersInside[i];
             if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) {
                 this.MarkColliderRemoved(collider);
             }
@@ -24,9 +24,9 @@ public abstract class TriggerCollidersTracker<T> : MonoBehaviour {
         if (collider.GetComponent<T>() == null) {
             return;
         }
-        if (!this.collidingColliders.Contains(collider)) {
-            this.collidingColliders.Add(collider);
-            if (this.collidingColliders.Count == 1) {
+        if (!this.collidersInside.Contains(collider)) {
+            this.collidersInside.Add(collider);
+            if (this.collidersInside.Count == 1) {
                 this.OnAtLeastOneCollider();
             }
         }
@@ -38,10 +38,10 @@ public abstract class TriggerCollidersTracker<T> : MonoBehaviour {
     }
 
     private void MarkColliderRemoved(Collider collider) {
-        if (this.collidingColliders.Contains(collider)) {
-            this.collidingColliders.Remove(collider);
+        if (this.collidersInside.Contains(collider)) {
+            this.collidersInside.Remove(collider);
             this.OnColliderExit(collider);
-            if (this.collidingColliders.Count == 0) {
+            if (this.collidersInside.Count == 0) {
                 this.OnNoColliders();
             }
         }

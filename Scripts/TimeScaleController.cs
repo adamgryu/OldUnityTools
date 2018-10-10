@@ -66,7 +66,7 @@ public class TimeScaleController : Singleton<TimeScaleController> {
     /// <summary>
     /// Slows down time for a some realtime seconds.
     /// </summary>
-    public void SlowMo(float slowTimeScale, float duration, float? timeChangeSpeed) {
+    public void SlowMo(float slowTimeScale, float duration, float? timeChangeSpeed = null) {
         slowMoScale = slowTimeScale;
         slowMoDuration = duration;
         if (timeChangeSpeed.HasValue) {

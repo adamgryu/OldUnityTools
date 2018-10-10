@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// This class applies forces to a rigidbody so that its movement mimics that
@@ -13,20 +14,24 @@ public abstract class PhysicsMovement : MonoBehaviour {
     const float DESIRED_DELTA_TIME = 1 / 60f;
     const float EPSILON = 0.001f;
 
+    [SerializeField]
+    [FormerlySerializedAs("maxVelocity")]
+    private float _maxSpeed = 5;
+
     /// <summary>
     /// The movement velocity of the character that we try to reach.
     /// </summary>
-    public float maxVelocity = 5;
+    public float maxSpeed { get { return _maxSpeed; } protected set { _maxSpeed = value; } }
 
     /// <summary>
     /// The strength of the forces applied to the character to reach the maximum velocity.
     /// </summary>
-    public float movementForce = 10;
+    public float movementForce = 8000;
 
     /// <summary>
     /// The strength of the movement force when suspended in midair.
     /// </summary>
-    public float midairForce = 5;
+    public float midairForce = 8000;
 
     /// <summary>
     /// Additional gravity force to be applied to the character while it is grounded.
@@ -51,12 +56,12 @@ public abstract class PhysicsMovement : MonoBehaviour {
     /// <summary>
     /// The speed at which the object turns to face its direction.
     /// </summary>
-    public float turnSpeed = 4;
+    public float turnSpeed = 0;
 
     /// <summary>
     /// The mask used for the grounding raycast.
     /// </summary>
-    public LayerMask groundRaycastMask;
+    public LayerMask groundRaycastMask = ~(1 << 2);
 
     /// <summary>
     /// The position for the force is applied. If left null, it uses the center.
@@ -209,7 +214,7 @@ public abstract class PhysicsMovement : MonoBehaviour {
     }
 
     public virtual float ResolveMaximumVelocity() {
-        return this.maxVelocity;
+        return this._maxSpeed;
     }
 
     #endregion
