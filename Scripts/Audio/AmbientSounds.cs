@@ -24,12 +24,17 @@ namespace QuickUnityTools.Audio {
             AmbientSoundManager.instance.Initalize(this);
         }
 
+        protected override void OnEnable() {
+            base.OnEnable();
+            AmbientSoundManager.instance.UpdateSounds(soundsInScene);
+        }
+
         public void SetSounds(AmbientSound[] sounds) {
             soundsInScene = sounds;
             AmbientSoundManager.instance.UpdateSounds(sounds);
         }
 
-        private class AmbientSoundManager : Singleton<AmbientSoundManager> { 
+        private class AmbientSoundManager : Singleton<AmbientSoundManager> {
             private AudioMixerGroup mixerGroup;
             private float fadeTime = 1f;
             private Dictionary<AudioClip, AudioSource> playingSounds = new Dictionary<AudioClip, AudioSource>();
@@ -44,6 +49,8 @@ namespace QuickUnityTools.Audio {
                 }
             }
 
+            /**
+             * This is the old way of triggering
             private void Awake() {
                 SceneManager.activeSceneChanged += OnActiveSceneChanged;
             }
@@ -56,6 +63,7 @@ namespace QuickUnityTools.Audio {
                 var sounds = soundGroups.FirstOrDefault();
                 UpdateSounds(sounds != null ? sounds.soundsInScene : new AmbientSound[0]);
             }
+            */
 
             public void UpdateSounds(AmbientSound[] newSounds) {
                 CancelPreviousFades();

@@ -8,6 +8,7 @@ namespace QuickUnityTools.Audio {
     public class BasicMusicStackElement : IMusicStackElement {
 
         public AudioClip music;
+        public SmoothLoopAudioClip smoothLoopMusic;
         public MusicStackPriorty priority = MusicStackPriorty.Low;
         public MusicStack.Transition transitionIn = MusicStack.Transition.CROSS_FADE;
         public MusicStack.Transition transitionOut = MusicStack.Transition.CROSS_FADE;
@@ -18,6 +19,9 @@ namespace QuickUnityTools.Audio {
         }
 
         public MusicStack.IMusicAsset GetMusicAsset() {
+            if (smoothLoopMusic != null) {
+                return new SmoothLoopMusicAsset(smoothLoopMusic);
+            }
             return music != null ? new AudioClipMusicAsset(music) : null;
         }
 

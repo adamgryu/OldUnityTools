@@ -15,9 +15,21 @@ namespace QuickUnityTools.Audio {
         private const int SECONDS_IN_MINUTE = 60;
 
         public SmoothLoopAudioClip music;
-        public AudioMixerGroup mixerGroup;
 
-        private float volume {
+        public AudioMixerGroup mixerGroup {
+            get { return _mixerGroup; }
+            set {
+                _mixerGroup = value;
+                if (audioSources != null) {
+                    for (int i = 0; i < audioSources.Length; i++) {
+                        audioSources[i].outputAudioMixerGroup = mixerGroup;
+                    }
+                }
+            }
+        }
+        private AudioMixerGroup _mixerGroup;
+
+        public float volume {
             get { return _volume; }
             set {
                 _volume = value;
@@ -27,6 +39,8 @@ namespace QuickUnityTools.Audio {
             }
         }
         private float _volume = 1;
+
+        public bool isPlaying { get; private set; }
 
         private AudioSource[] audioSources;
         private float introTime { get { return ((music.beatsPerMeasure * music.introMeasures) / music.beatsPerMinute) * SECONDS_IN_MINUTE; } }
@@ -45,18 +59,13 @@ namespace QuickUnityTools.Audio {
                 audioSources[i].outputAudioMixerGroup = mixerGroup;
                 audioSources[i].volume = volume;
             }
-            Play();
         }
 
         public void Play() {
             // Reset the play state.
-            for (int i = 0; i < audioSources.Length; i++) {
-                audioSources[i].Stop();
-            }
-            if (loopTimer != null) {
-                loopTimer.Cancel();
-            }
+            Stop();
             startDpsTime = AudioSettings.dspTime;
+            isPlaying = true;
 
             // Play the full track once.
             audioSources[0].Play();
@@ -70,6 +79,16 @@ namespace QuickUnityTools.Audio {
 
             // After the first run of the track finishes, schedule the second loop while the first loop is playing.
             loopTimer = this.RegisterTimer(music.length, ScheduleNextLoop);
+        }
+
+        public void Stop() {
+            for (int i = 0; i < audioSources.Length; i++) {
+                audioSources[i].Stop();
+            }
+            if (loopTimer != null) {
+                loopTimer.Cancel();
+            }
+            isPlaying = false;
         }
 
         /// <summary>
