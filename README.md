@@ -1,4 +1,8 @@
+I'm retiring this repo after making so many different branches of this locally.
+I might create a new version of this at some point.
+
 # QuickUnityTools
+
 A bunch of scripts I use when working with Unity to do things faster! (Handy for game jams!)
 
 It's about time I finally made a submodule out of all the scripts I have lying around...
